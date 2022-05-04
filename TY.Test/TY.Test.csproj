@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+
+        <IsPackable>false</IsPackable>
+
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <RootNamespace>TY.Test</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NLog" Version="4.7.15" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\TY.App\TY.App.csproj" />
+        <ProjectReference Include="..\TY.Core\TY.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="NLog.config">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>
