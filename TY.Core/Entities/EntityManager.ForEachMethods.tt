@@ -1,0 +1,107 @@
+<#@ template language="C#" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Collections.Specialized" #>
+namespace TY.Entities;
+<#
+    const int start = 1;
+
+    const int end = 8;
+
+    const string typeName = "V";
+
+    const string genericName = "T";
+
+    const string parameterName = "t";
+
+    string Types(int count)
+    {
+        return typeName + count;
+    }
+
+    string Generics(int count)
+    {
+        var builder = new StringBuilder();
+        for (var i = 0; i < count; i++)
+        {
+            builder.Append(genericName).Append(i);
+            if (i < count - 1)
+            {
+                builder.Append(", ");
+            }
+        }
+
+        return builder.ToString();
+    }
+
+    string Parameters(int count)
+    {
+        var stringBuilder = new StringBuilder();
+        for (var i = 0; i < count; i++)
+        {
+            stringBuilder.Append(genericName).Append(i);
+            stringBuilder.Append(" ");
+            stringBuilder.Append(parameterName).Append(i);
+            if (i < count - 1)
+            {
+                stringBuilder.Append(", ");
+            }
+        }
+
+        return stringBuilder.ToString();
+    }
+#>
+
+<#
+    const string componentsName = "components";
+
+    string InvokeParameters(string name, int count)
+    {
+        if (count == 1)
+        {
+            return name;
+        }
+        var builder = new StringBuilder("(");
+
+        for (var i = 1; i <= count; i++)
+        {
+            builder.Append(name).Append(".").Append("Item").Append(i);
+            if (i < count)
+            {
+                builder.Append(",").Append(" ");
+            }
+        }
+
+        builder.Append(")");
+        return builder.ToString();
+    }
+#>
+
+public partial class EntitiesForEach
+{
+<#
+    for (var i = start; i < end; i++)
+    {
+        WriteLine(
+            $"    public delegate void {Types(i)}<{Generics(i)}>({Parameters(i)});"
+            );
+        WriteLine("");
+    }
+    for (var i = start; i < end; i++)
+    {
+        WriteLine(
+            $@"    public void ForEach<{Generics(i)}>({Types(i)}<{Generics
+                (i)}> data)
+    {{
+        var {componentsName} = EntityManager.FindComponents<{Generics(i)}>();
+        data.Invoke({InvokeParameters(componentsName, i)});
+    }}");
+        WriteLine("");
+    }
+#>
+}
+
+public partial class EntityManager
+{
+
+}

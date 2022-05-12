@@ -23,7 +23,7 @@ public class Application : IDisposable
         _assemblies = assemblies;
     }
 
-    public void AddWorld(string name)
+    public void CreateNewWorld(string name)
     {
         var world = new World(name, _assemblies);
         Log.Debug($"Create World:{world}");

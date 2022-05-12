@@ -1,34 +1,18 @@
 using TY.Entities;
-using TY.Worlds;
 
 namespace TY.Systems;
 
 public abstract class SystemBase
 {
-    private bool _enable = true;
+    internal EntityManager _entityManager;
 
-    public bool Enable => _enable;
+    public EntityManager EntityManager => _entityManager;
 
-    public World World;
-
-    public EntityManager EntityManager => World.EntityManager;
+    public EntitiesForEach Entities => _entityManager.EntitiesForEach;
 
     public void Update()
     {
-        if (!_enable)
-        {
-            return;
-        }
-
-        try
-        {
-            OnUpdate();
-        }
-        catch
-        {
-            Destroy();
-            throw;
-        }
+        OnUpdate();
     }
 
     public virtual void Awake()
@@ -37,10 +21,5 @@ public abstract class SystemBase
 
     public virtual void OnUpdate()
     {
-    }
-
-    public void Destroy()
-    {
-        _enable = false;
     }
 }

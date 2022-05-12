@@ -4,14 +4,14 @@ namespace TY;
 
 public static class Utility
 {
-    public static List<Type> GetTypesFrom<T>(IEnumerable<Assembly> assemblies)
+    public static List<Type> GetTypesFromAssembly<T>(IEnumerable<Assembly> assemblies)
     {
-        return GetTypesFrom(typeof(T), assemblies);
+        return GetTypesFromAssembly(typeof(T), assemblies);
     }
 
-    public static List<Type> GetTypesFrom(Type type, IEnumerable<Assembly> assemblies)
+    public static List<Type> GetTypesFromAssembly(Type type, IEnumerable<Assembly> assemblies)
     {
-        var list = new List<Type>();
+        var result = new List<Type>();
 
         foreach (var assembly in assemblies)
         {
@@ -20,11 +20,11 @@ public static class Utility
             {
                 if (t != type && type.IsAssignableFrom(t))
                 {
-                    list.Add(t);
+                    result.Add(t);
                 }
             }
         }
 
-        return list;
+        return result;
     }
 }
