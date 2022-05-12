@@ -48,6 +48,11 @@ public partial class EntityManager
         }
     }
 
+    public List<IComponent> FindComponents(Type type)
+    {
+        return new List<IComponent>();
+    }
+
     public List<IComponent[]> FindComponents(params Type[] types)
     {
         return new List<IComponent[]>();
