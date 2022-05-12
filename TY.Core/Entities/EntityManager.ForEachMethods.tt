@@ -3,6 +3,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Collections.Specialized" #>
 namespace TY.Entities;
+
 <#
     const int start = 1;
 
@@ -22,10 +23,10 @@ namespace TY.Entities;
     string Generics(int count)
     {
         var builder = new StringBuilder();
-        for (var i = 0; i < count; i++)
+        for (var i = 1; i <= count; i++)
         {
             builder.Append(genericName).Append(i);
-            if (i < count - 1)
+            if (i < count)
             {
                 builder.Append(", ");
             }
@@ -37,12 +38,12 @@ namespace TY.Entities;
     string Parameters(int count)
     {
         var stringBuilder = new StringBuilder();
-        for (var i = 0; i < count; i++)
+        for (var i = 1; i <= count; i++)
         {
             stringBuilder.Append(genericName).Append(i);
             stringBuilder.Append(" ");
             stringBuilder.Append(parameterName).Append(i);
-            if (i < count - 1)
+            if (i < count)
             {
                 stringBuilder.Append(", ");
             }
@@ -51,9 +52,8 @@ namespace TY.Entities;
         return stringBuilder.ToString();
     }
 #>
-
 <#
-    const string componentsName = "components";
+    const string componentsName = "component";
 
     string InvokeParameters(string name, int count)
     {
@@ -61,8 +61,7 @@ namespace TY.Entities;
         {
             return name;
         }
-        var builder = new StringBuilder("(");
-
+        var builder = new StringBuilder();
         for (var i = 1; i <= count; i++)
         {
             builder.Append(name).Append(".").Append("Item").Append(i);
@@ -71,12 +70,45 @@ namespace TY.Entities;
                 builder.Append(",").Append(" ");
             }
         }
+        return builder.ToString();
+    }
 
+    string Typeof(int count)
+    {
+        var builder = new StringBuilder();
+
+        for (var i = 1; i <= count; i++)
+        {
+            builder.Append("typeof(").Append(genericName).Append(i).Append(")");
+            if (i < count)
+            {
+                builder.Append(", ");
+            }
+        }
+
+        return builder.ToString();
+    }
+
+    string Select(int count)
+    {
+        if (count == 1)
+        {
+            return "v => (T1) v";
+        }
+        var builder = new StringBuilder();
+        builder.Append("v => (");
+        for (var i = 1; i <= count; i++)
+        {
+            builder.Append("(T").Append(i).Append(")").Append("v[").Append(i).Append("]");
+            if (i < count)
+            {
+                builder.Append(", ");
+            }
+        }
         builder.Append(")");
         return builder.ToString();
     }
 #>
-
 public partial class EntitiesForEach
 {
 <#
@@ -93,15 +125,28 @@ public partial class EntitiesForEach
             $@"    public void ForEach<{Generics(i)}>({Types(i)}<{Generics
                 (i)}> data)
     {{
-        var {componentsName} = EntityManager.FindComponents<{Generics(i)}>();
-        data.Invoke({InvokeParameters(componentsName, i)});
+        var components = EntityManager.FindComponents<{Generics(i)}>();
+        foreach (var component in components)
+        {{
+            data.Invoke({InvokeParameters(componentsName, i)});
+        }}
     }}");
         WriteLine("");
     }
 #>
 }
-
 public partial class EntityManager
 {
+<#
+    for (var i = start; i < end; i++)
+    {
+        WriteLine(i == 1
+            ? $@"   public List<{Generics(i)}> FindComponents<{Generics(i)}>()"
+            : $@"   public List<({Generics(i)})> FindComponents<{Generics(i)}>()");
 
+        WriteLine(@$"   {{
+        return FindComponents({Typeof(i)}).Select({Select(i)}).ToList();
+    }}");
+    }
+#>
 }
