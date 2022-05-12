@@ -1,8 +1,9 @@
+using System;
 using NLog;
 using TY.App;
 using TY.Components;
+using TY.Entities;
 using TY.Systems;
-using TY.Worlds;
 
 namespace TY.Test;
 
@@ -12,17 +13,13 @@ public static class ApplicationTests
 
     public static void Main(string[] args)
     {
-        World.WorldCreated += w => { Log.Debug($"创建：{w}"); };
-        World.SystemCreated += (w, s) => { Log.Debug($"创建：{w},{s}"); };
-        World.SystemDestroy += (w, s) => { Log.Debug($"销毁：{w}:{s}"); };
-        World.WorldDestroyed += w => { Log.Debug($"销毁：{w}"); };
         var app = new Application();
-        app.AddWorld("Default World");
+        app.CreateNewWorld("Default World");
         app.Run();
     }
 }
 
-public class MySystem : SystemBase
+public class TestSystem : SystemBase
 {
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
@@ -32,20 +29,10 @@ public class MySystem : SystemBase
         EntityManager.AddComponent(entity, new Data {X = 10, Y = 10});
     }
 
-    public class Query
-    {
-        public Data data;
-    }
 
     public override void OnUpdate()
     {
-        var queries = EntityManager.Query<Query>();
-        foreach (var query in queries)
-        {
-            query.data.X++;
-            query.data.Y++;
-            _logger.Debug($"data:{query.data}");
-        }
+        Entities.ForEach((Data d) => { Console.WriteLine(d); });
     }
 }
 

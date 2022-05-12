@@ -22,8 +22,7 @@ public partial class EntityManager
 
     public Entity CreateEntity()
     {
-        Entity entity;
-        entity.Id = NextEntityId;
+        var entity = new Entity(NextEntityId);
 
         _entities[entity] = new List<IComponent>();
 
@@ -33,7 +32,25 @@ public partial class EntityManager
 
     public void AddComponent<T>(Entity entity, T component) where T : class, IComponent
     {
-        _entities[entity].Add(component);
+        var components = _entities[entity];
+        if (!components.Contains(component))
+        {
+            components.Add(component);
+            entity.Version++;
+        }
+    }
+
+    public void AddComponent<T>(Entity entity, params T[] components) where T : class, IComponent
+    {
+        foreach (var component in components)
+        {
+            AddComponent(entity, component);
+        }
+    }
+
+    public List<IComponent[]> FindComponents(params Type[] types)
+    {
+        return new List<IComponent[]>();
     }
 
     public void Destroy()
@@ -42,6 +59,7 @@ public partial class EntityManager
         {
             return;
         }
+
         _destroyed = true;
         _entities.Clear();
         _entities = null;

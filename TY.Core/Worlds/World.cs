@@ -18,49 +18,33 @@ public partial class World : IDisposable
 
     private static readonly List<World> AllWorlds = new List<World>();
 
-    public static IReadOnlyList<World> AllWorldsReadOnly => new ReadOnlyCollection<World>(AllWorlds);
+    public static IEnumerable<World> AllWorldsReadOnly => new ReadOnlyCollection<World>(AllWorlds);
 
-    public static event Action<World>? WorldCreated;
+    private readonly List<SystemBase> _systems = new List<SystemBase>();
 
-    public static event Action<World>? WorldDestroyed;
+    private readonly Dictionary<Type, SystemBase> _systemLookup = new Dictionary<Type, SystemBase>();
 
-    public static event Action<World, SystemBase>? SystemCreated;
+    private EntityManager? _entityManager;
 
-    public static event Action<World, SystemBase>? SystemDestroy;
+    private EntityManager EntityManager => _entityManager ??= new EntityManager(this);
 
-    private bool _destroyed = false;
+    private string Name { get; }
 
-    private bool _enable;
-
-    private List<SystemBase> _systems = new List<SystemBase>();
-
-    private Dictionary<Type, SystemBase> _systemLookup = new Dictionary<Type, SystemBase>();
-
-    private EntityManager _entityManager;
-
-    public EntityManager? EntityManager => _entityManager;
-
-    public string Name { get; }
-
-    public WorldType WorldType { get; }
-
-    private Assembly[] _assemblies;
+    private readonly Assembly[] _assemblies;
 
     public override string ToString()
     {
         return Name;
     }
 
-    public World(string name, WorldType worldType = WorldType.Default) :
-        this(name, AppDomain.CurrentDomain.GetAssemblies(), worldType)
+    public World(string name) :
+        this(name, AppDomain.CurrentDomain.GetAssemblies())
     {
     }
 
-    public World(string name, Assembly[] assemblies, WorldType worldType = WorldType.Default)
+    public World(string name, Assembly[] assemblies)
     {
         Name = name;
-        WorldType = worldType;
-        _entityManager = new EntityManager(this);
         _assemblies = assemblies;
         Init();
     }
@@ -68,29 +52,23 @@ public partial class World : IDisposable
     private void Init()
     {
         AllWorlds.Add(this);
-        var types = Utility.GetTypesFrom(typeof(SystemBase), _assemblies);
+        var types = Utility.GetTypesFromAssembly(typeof(SystemBase), _assemblies);
         foreach (var type in types)
         {
             var system = CreateSystemAndAdd(type);
             if (system != null)
             {
-                system.World = this;
+                system._entityManager = EntityManager;
                 system.Awake();
             }
         }
-
-        WorldCreated?.Invoke(this);
-        _enable = true;
     }
 
     public void Update()
     {
-        if (_enable)
+        foreach (var system in _systems)
         {
-            foreach (var system in _systems)
-            {
-                system.Update();
-            }
+            system.Update();
         }
     }
 
@@ -106,12 +84,12 @@ public partial class World : IDisposable
         return system ?? CreateSystemAndAdd<T>();
     }
 
-    SystemBase? GetExistsSystem(Type type)
+    private SystemBase? GetExistsSystem(Type type)
     {
         return _systemLookup.TryGetValue(type, out var systemBase) ? systemBase : null;
     }
 
-    T? GetExistsSystem<T>() where T : SystemBase
+    private T? GetExistsSystem<T>() where T : SystemBase
     {
         return (T?) GetExistsSystem(typeof(T));
     }
@@ -123,13 +101,12 @@ public partial class World : IDisposable
         {
             _systems.Add(system);
             _systemLookup[type] = system;
-            SystemCreated?.Invoke(this, system);
         }
 
         return system;
     }
 
-    T? CreateSystemAndAdd<T>() where T : SystemBase
+    private T? CreateSystemAndAdd<T>() where T : SystemBase
     {
         return (T?) CreateSystemAndAdd(typeof(T));
     }
@@ -140,37 +117,13 @@ public partial class World : IDisposable
     }
 
 
-    T CreateSystem<T>() where T : SystemBase
+    private T CreateSystem<T>() where T : SystemBase
     {
         return Activator.CreateInstance<T>();
     }
 
     public void Dispose()
     {
-        if (_destroyed)
-        {
-            return;
-        }
-
-        _destroyed = true;
-        _enable = false;
-
         AllWorlds.Remove(this);
-        WorldDestroyed?.Invoke(this);
-
-        foreach (var systemBase in _systems)
-        {
-            systemBase.Destroy();
-            SystemDestroy?.Invoke(this, systemBase);
-        }
-
-        _systems.Clear();
-        _systems = null;
-
-        _systemLookup.Clear();
-        _systemLookup = null;
-
-        _entityManager.Destroy();
-        _entityManager = null;
     }
 }
