@@ -18,7 +18,7 @@ public static class Utility
             var types = assembly.GetTypes();
             foreach (var t in types)
             {
-                if (t != type && type.IsAssignableFrom(t))
+                if (t != type && type.IsAssignableFrom(t) && !t.IsAbstract)
                 {
                     result.Add(t);
                 }
