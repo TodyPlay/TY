@@ -10,7 +10,7 @@ public class TimeDataTest : SystemBase
 
     protected override Task OnUpdate()
     {
-        _logger.Debug(Time);
+        _logger.Debug(TimeData);
         return Task.CompletedTask;
     }
 }

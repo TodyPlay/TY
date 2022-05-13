@@ -3,6 +3,7 @@ using System.Reflection;
 using NLog;
 using TY.Entities;
 using TY.Systems;
+using TY.Time;
 
 namespace TY.Worlds;
 
@@ -26,7 +27,9 @@ public partial class World : IDisposable
 
     private EntityManager? _entityManager;
 
-    private EntityManager EntityManager => _entityManager ??= new EntityManager();
+    private EntityManager EntityManager => _entityManager ??= new EntityManager(this);
+
+    internal TimeData TimeData { get; } = new();
 
     private string Name { get; }
 

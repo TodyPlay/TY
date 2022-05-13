@@ -1,5 +1,6 @@
 using TY.Entities;
 using TY.Time;
+using TY.Worlds;
 
 namespace TY.Systems;
 
@@ -9,7 +10,7 @@ public abstract class SystemBase
 
     protected EntitiesForEach Entities => EntityManager.EntitiesForEach!;
 
-    protected static TimeData Time { get; } = new();
+    protected TimeData TimeData => EntityManager.World.TimeData;
 
     public async Task Update()
     {

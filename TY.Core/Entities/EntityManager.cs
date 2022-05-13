@@ -1,4 +1,5 @@
 using TY.Components;
+using TY.Worlds;
 
 namespace TY.Entities;
 
@@ -9,6 +10,13 @@ public partial class EntityManager
     private uint NextEntityId => ++_currentId;
 
     private readonly Dictionary<Entity, Dictionary<Type, IComponent>> _entities = new();
+
+    public World World { get; }
+
+    public EntityManager(World world)
+    {
+        World = world;
+    }
 
     public Entity CreateEntity()
     {

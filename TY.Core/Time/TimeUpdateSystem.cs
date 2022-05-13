@@ -8,8 +8,8 @@ public sealed class TimeUpdateSystem : SystemBase
 
     protected override Task OnUpdate()
     {
-        Time.DeltaTime = (DateTime.Now - _startTime - TimeSpan.FromMilliseconds(Time.Time)).TotalMilliseconds;
-        Time.Time = (DateTime.Now - _startTime).TotalMilliseconds;
+        TimeData.DeltaTime = (DateTime.Now - _startTime - TimeSpan.FromMilliseconds(TimeData.Time)).TotalMilliseconds;
+        TimeData.Time = (DateTime.Now - _startTime).TotalMilliseconds;
         return Task.CompletedTask;
     }
 }
