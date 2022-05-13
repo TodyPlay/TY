@@ -10,16 +10,17 @@ public abstract class SystemBase
 
     protected EntitiesForEach Entities => _entityManager.EntitiesForEach;
 
-    public void Update()
+    public async Task Update()
     {
-        OnUpdate();
+        await OnUpdate();
     }
 
     public virtual void Awake()
     {
     }
 
-    public virtual void OnUpdate()
+    protected virtual Task OnUpdate()
     {
+        return Task.CompletedTask;
     }
 }

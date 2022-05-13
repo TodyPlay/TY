@@ -64,11 +64,11 @@ public partial class World : IDisposable
         }
     }
 
-    public void Update()
+    public async Task Update()
     {
         foreach (var system in _systems)
         {
-            system.Update();
+            await system.Update();
         }
     }
 

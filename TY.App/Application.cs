@@ -12,7 +12,7 @@ public class Application : IDisposable
 
     public bool Enable { get; set; } = true;
 
-    public int Sleep { get; set; } = 1;
+    public int Delay { get; set; } = 1;
 
     public Application() : this(AppDomain.CurrentDomain.GetAssemblies())
     {
@@ -29,20 +29,20 @@ public class Application : IDisposable
         Log.Debug($"Create World:{world}");
     }
 
-    public void Run()
+    public async Task Run()
     {
         while (Enable)
         {
-            Thread.Sleep(Sleep);
-            Update();
+            await Task.Delay(Delay);
+            await Update();
         }
     }
 
-    public void Update()
+    private async Task Update()
     {
         foreach (var world in World.AllWorldsReadOnly)
         {
-            world.Update();
+            await world.Update();
         }
     }
 
