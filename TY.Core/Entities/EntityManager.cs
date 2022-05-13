@@ -1,30 +1,20 @@
 using TY.Components;
-using TY.Worlds;
 
 namespace TY.Entities;
 
 public partial class EntityManager
 {
-    private World _world;
-
     private uint _currentId;
 
     private uint NextEntityId => ++_currentId;
 
-    private Dictionary<Entity, List<IComponent>> _entities = new Dictionary<Entity, List<IComponent>>();
-
-    private bool _destroyed;
-
-    public EntityManager(World world)
-    {
-        _world = world;
-    }
+    private Dictionary<Entity, Dictionary<Type, IComponent>> _entities = new();
 
     public Entity CreateEntity()
     {
         var entity = new Entity(NextEntityId);
 
-        _entities[entity] = new List<IComponent>();
+        _entities[entity] = new Dictionary<Type, IComponent>();
 
         return entity;
     }
@@ -33,11 +23,13 @@ public partial class EntityManager
     public void AddComponent<T>(Entity entity, T component) where T : class, IComponent
     {
         var components = _entities[entity];
-        if (!components.Contains(component))
+        if (components.ContainsKey(typeof(T)))
         {
-            components.Add(component);
-            entity.Version++;
+            return;
         }
+
+        components[typeof(T)] = component;
+        entity.Version++;
     }
 
     public void AddComponent<T>(Entity entity, params T[] components) where T : class, IComponent
@@ -50,23 +42,31 @@ public partial class EntityManager
 
     public List<IComponent> FindComponents(Type type)
     {
-        return new List<IComponent>();
+        var result = new List<IComponent>();
+
+        foreach (var (_, components) in _entities)
+        {
+            if (components.ContainsKey(type))
+            {
+                result.Add(components[type]);
+            }
+        }
+
+        return result;
     }
 
     public List<IComponent[]> FindComponents(params Type[] types)
     {
-        return new List<IComponent[]>();
-    }
+        var result = new List<IComponent[]>();
 
-    public void Destroy()
-    {
-        if (_destroyed)
+        foreach (var (_, components) in _entities)
         {
-            return;
+            if (types.All(type => components.ContainsKey(type)))
+            {
+                result.Add(types.Select(v => components[v]).ToArray());
+            }
         }
 
-        _destroyed = true;
-        _entities.Clear();
-        _entities = null;
+        return result;
     }
 }

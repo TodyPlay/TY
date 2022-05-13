@@ -64,10 +64,10 @@ namespace TY.Entities;
         var builder = new StringBuilder();
         for (var i = 1; i <= count; i++)
         {
-            builder.Append(name).Append(".").Append("Item").Append(i);
+            builder.Append($"{name}.Item{i}");
             if (i < count)
             {
-                builder.Append(",").Append(" ");
+                builder.Append(", ");
             }
         }
         return builder.ToString();
@@ -79,7 +79,7 @@ namespace TY.Entities;
 
         for (var i = 1; i <= count; i++)
         {
-            builder.Append("typeof(").Append(genericName).Append(i).Append(")");
+            builder.Append($"typeof({genericName}{i})");
             if (i < count)
             {
                 builder.Append(", ");
@@ -99,7 +99,7 @@ namespace TY.Entities;
         builder.Append("v => (");
         for (var i = 1; i <= count; i++)
         {
-            builder.Append("(T").Append(i).Append(")").Append("v[").Append(i).Append("]");
+            builder.Append($"(T{i}) v[{i - 1}]");
             if (i < count)
             {
                 builder.Append(", ");
@@ -141,12 +141,13 @@ public partial class EntityManager
     for (var i = start; i < end; i++)
     {
         WriteLine(i == 1
-            ? $@"   public List<{Generics(i)}> FindComponents<{Generics(i)}>()"
-            : $@"   public List<({Generics(i)})> FindComponents<{Generics(i)}>()");
+            ? $@"    public List<{Generics(i)}> FindComponents<{Generics(i)}>()"
+            : $@"    public List<({Generics(i)})> FindComponents<{Generics(i)}>()");
 
-        WriteLine(@$"   {{
+        WriteLine(@$"    {{
         return FindComponents({Typeof(i)}).Select({Select(i)}).ToList();
-    }}");
+    }}
+");
     }
 #>
 }

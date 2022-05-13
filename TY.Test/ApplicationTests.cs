@@ -1,8 +1,6 @@
-using System;
 using NLog;
 using TY.App;
 using TY.Components;
-using TY.Entities;
 using TY.Systems;
 
 namespace TY.Test;
@@ -32,7 +30,12 @@ public class TestSystem : SystemBase
 
     public override void OnUpdate()
     {
-        Entities.ForEach((Data d) => { Console.WriteLine(d); });
+        Entities.ForEach((Data d1) =>
+        {
+            d1.X++;
+            d1.Y++;
+            _logger.Debug(d1);
+        });
     }
 }
 
