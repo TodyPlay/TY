@@ -26,7 +26,7 @@ public partial class World : IDisposable
 
     private EntityManager? _entityManager;
 
-    private EntityManager EntityManager => _entityManager ??= new EntityManager(this);
+    private EntityManager EntityManager => _entityManager ??= new EntityManager();
 
     private string Name { get; }
 

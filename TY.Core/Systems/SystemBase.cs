@@ -6,9 +6,9 @@ public abstract class SystemBase
 {
     internal EntityManager _entityManager;
 
-    public EntityManager EntityManager => _entityManager;
+    protected EntityManager EntityManager => _entityManager;
 
-    public EntitiesForEach Entities => _entityManager.EntitiesForEach;
+    protected EntitiesForEach Entities => _entityManager.EntitiesForEach;
 
     public void Update()
     {
