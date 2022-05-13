@@ -8,7 +8,7 @@ public partial class EntityManager
 
     private uint NextEntityId => ++_currentId;
 
-    private Dictionary<Entity, Dictionary<Type, IComponent>> _entities = new();
+    private readonly Dictionary<Entity, Dictionary<Type, IComponent>> _entities = new();
 
     public Entity CreateEntity()
     {

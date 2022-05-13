@@ -1,14 +1,15 @@
 using TY.Entities;
+using TY.Time;
 
 namespace TY.Systems;
 
 public abstract class SystemBase
 {
-    internal EntityManager _entityManager;
+    public EntityManager EntityManager { get; internal set; } = null!;
 
-    protected EntityManager EntityManager => _entityManager;
+    protected EntitiesForEach Entities => EntityManager.EntitiesForEach!;
 
-    protected EntitiesForEach Entities => _entityManager.EntitiesForEach;
+    protected static TimeData Time { get; } = new();
 
     public async Task Update()
     {

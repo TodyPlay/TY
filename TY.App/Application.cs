@@ -8,6 +8,9 @@ public class Application : IDisposable
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
+    private static readonly Assembly[] FrameworkAssemblies =
+        {Assembly.Load("TY.Core"), Assembly.Load("TY.App")};
+
     private Assembly[] _assemblies;
 
     public bool Enable { get; set; } = true;
@@ -20,7 +23,10 @@ public class Application : IDisposable
 
     public Application(Assembly[] assemblies)
     {
-        _assemblies = assemblies;
+        var list = new List<Assembly>();
+        list.AddRange(assemblies);
+        list.AddRange(FrameworkAssemblies);
+        _assemblies = list.Distinct().ToArray();
     }
 
     public void CreateNewWorld(string name)

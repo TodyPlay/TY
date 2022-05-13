@@ -58,7 +58,7 @@ public partial class World : IDisposable
             var system = CreateSystemAndAdd(type);
             if (system != null)
             {
-                system._entityManager = EntityManager;
+                system.EntityManager = EntityManager;
                 system.Awake();
             }
         }
