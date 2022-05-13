@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using NLog;
 using TY.App;
 using TY.Components;
@@ -9,11 +10,11 @@ public static class ApplicationTests
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var app = new Application();
         app.CreateNewWorld("Default World");
-        app.Run();
+        await app.Run();
     }
 }
 
@@ -28,9 +29,9 @@ public class TestSystem : SystemBase
     }
 
 
-    public override void OnUpdate()
+    protected override async Task OnUpdate()
     {
-        Entities.ForEach((Data d1) =>
+        await Entities.ForEach((Data d1) =>
         {
             d1.X++;
             d1.Y++;
