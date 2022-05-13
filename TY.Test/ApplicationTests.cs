@@ -36,6 +36,7 @@ public class TestSystem : SystemBase
             d1.X++;
             d1.Y++;
             _logger.Debug(d1);
+            return Task.CompletedTask;
         });
     }
 }

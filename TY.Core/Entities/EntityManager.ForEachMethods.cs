@@ -2,26 +2,26 @@ namespace TY.Entities;
 
 public partial class EntitiesForEach
 {
-    public delegate void V1<T1>(T1 t1);
+    public delegate Task V1<T1>(T1 t1);
 
-    public delegate void V2<T1, T2>(T1 t1, T2 t2);
+    public delegate Task V2<T1, T2>(T1 t1, T2 t2);
 
-    public delegate void V3<T1, T2, T3>(T1 t1, T2 t2, T3 t3);
+    public delegate Task V3<T1, T2, T3>(T1 t1, T2 t2, T3 t3);
 
-    public delegate void V4<T1, T2, T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4);
+    public delegate Task V4<T1, T2, T3, T4>(T1 t1, T2 t2, T3 t3, T4 t4);
 
-    public delegate void V5<T1, T2, T3, T4, T5>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5);
+    public delegate Task V5<T1, T2, T3, T4, T5>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5);
 
-    public delegate void V6<T1, T2, T3, T4, T5, T6>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6);
+    public delegate Task V6<T1, T2, T3, T4, T5, T6>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6);
 
-    public delegate void V7<T1, T2, T3, T4, T5, T6, T7>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7);
+    public delegate Task V7<T1, T2, T3, T4, T5, T6, T7>(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7);
 
     public async Task ForEach<T1>(V1<T1> data)
     {
         var components = EntityManager.FindComponents<T1>();
         foreach (var component in components)
         {
-            await Task.Run(() => data.Invoke(component));
+            await data.Invoke(component);
         }
     }
 
@@ -30,7 +30,7 @@ public partial class EntitiesForEach
         var components = EntityManager.FindComponents<T1, T2>();
         foreach (var component in components)
         {
-            await Task.Run(() => data.Invoke(component.Item1, component.Item2));
+            await data.Invoke(component.Item1, component.Item2);
         }
     }
 
@@ -39,7 +39,7 @@ public partial class EntitiesForEach
         var components = EntityManager.FindComponents<T1, T2, T3>();
         foreach (var component in components)
         {
-            await Task.Run(() => data.Invoke(component.Item1, component.Item2, component.Item3));
+            await data.Invoke(component.Item1, component.Item2, component.Item3);
         }
     }
 
@@ -48,7 +48,7 @@ public partial class EntitiesForEach
         var components = EntityManager.FindComponents<T1, T2, T3, T4>();
         foreach (var component in components)
         {
-            await Task.Run(() => data.Invoke(component.Item1, component.Item2, component.Item3, component.Item4));
+            await data.Invoke(component.Item1, component.Item2, component.Item3, component.Item4);
         }
     }
 
@@ -57,7 +57,7 @@ public partial class EntitiesForEach
         var components = EntityManager.FindComponents<T1, T2, T3, T4, T5>();
         foreach (var component in components)
         {
-            await Task.Run(() => data.Invoke(component.Item1, component.Item2, component.Item3, component.Item4, component.Item5));
+            await data.Invoke(component.Item1, component.Item2, component.Item3, component.Item4, component.Item5);
         }
     }
 
@@ -66,7 +66,7 @@ public partial class EntitiesForEach
         var components = EntityManager.FindComponents<T1, T2, T3, T4, T5, T6>();
         foreach (var component in components)
         {
-            await Task.Run(() => data.Invoke(component.Item1, component.Item2, component.Item3, component.Item4, component.Item5, component.Item6));
+            await data.Invoke(component.Item1, component.Item2, component.Item3, component.Item4, component.Item5, component.Item6);
         }
     }
 
@@ -75,7 +75,7 @@ public partial class EntitiesForEach
         var components = EntityManager.FindComponents<T1, T2, T3, T4, T5, T6, T7>();
         foreach (var component in components)
         {
-            await Task.Run(() => data.Invoke(component.Item1, component.Item2, component.Item3, component.Item4, component.Item5, component.Item6, component.Item7));
+            await data.Invoke(component.Item1, component.Item2, component.Item3, component.Item4, component.Item5, component.Item6, component.Item7);
         }
     }
 
