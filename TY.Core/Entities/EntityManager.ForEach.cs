@@ -11,11 +11,11 @@ public delegate void InvalidForEach(object obj);
 
 public partial class EntitiesForEach
 {
-    private readonly EntityManager _entityManager;
+    private EntityManager EntityManager { get; }
 
     public EntitiesForEach(EntityManager entityManager)
     {
-        _entityManager = entityManager;
+        EntityManager = entityManager;
     }
 
     public void ForEach(InvalidForEach invalidForEach)

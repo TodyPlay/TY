@@ -65,6 +65,8 @@ public partial class World : IDisposable
                 system.Awake();
             }
         }
+
+        _systems.Sort();
     }
 
     public async Task Update()

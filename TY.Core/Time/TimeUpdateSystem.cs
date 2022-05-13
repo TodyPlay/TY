@@ -2,6 +2,7 @@ using TY.Systems;
 
 namespace TY.Time;
 
+[SystemOrder(0)]
 public sealed class TimeUpdateSystem : SystemBase
 {
     private readonly DateTime _startTime = DateTime.Now;
