@@ -9,7 +9,7 @@
 
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-        <RootNamespace>TY.Test</RootNamespace>
+        <RootNamespace>TY.Demo</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

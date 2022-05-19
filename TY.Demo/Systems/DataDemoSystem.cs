@@ -3,9 +3,9 @@ using NLog;
 using TY.Components;
 using TY.Systems;
 
-namespace TY.Test;
+namespace TY.Demo.Systems;
 
-public class TestSystem : SystemBase
+public class DataDemoSystem : SystemBase
 {
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 

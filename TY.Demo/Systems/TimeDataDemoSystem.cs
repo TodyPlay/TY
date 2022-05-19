@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 using NLog;
 using TY.Systems;
 
-namespace TY.Test;
+namespace TY.Demo.Systems;
 
-public class TimeDataTest : SystemBase
+public class TimeDataDemoSystem : SystemBase
 {
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 

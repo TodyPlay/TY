@@ -29,10 +29,9 @@ public class Application : IDisposable
         _assemblies = list.Distinct().ToArray();
     }
 
-    public void CreateNewWorld(string name)
+    public World CreateNewWorld(string name)
     {
-        var world = new World(name, _assemblies);
-        Log.Debug($"Create World:{world}");
+        return new World(name, _assemblies);
     }
 
     public void Run()

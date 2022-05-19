@@ -1,9 +1,9 @@
 using NLog;
 using TY.App;
 
-namespace TY.Test;
+namespace TY.Demo;
 
-public static class ApplicationTests
+public static class Programmer
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
