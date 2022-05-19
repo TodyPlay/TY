@@ -15,7 +15,7 @@ public class Application : IDisposable
 
     public bool Enable { get; set; } = true;
 
-    public int Delay { get; set; } = 1;
+    public int Delay { get; set; } = 0;
 
     public Application() : this(AppDomain.CurrentDomain.GetAssemblies())
     {
@@ -35,21 +35,18 @@ public class Application : IDisposable
         Log.Debug($"Create World:{world}");
     }
 
-    public async Task Run()
+    public void Run()
     {
         while (Enable)
         {
-            await Task.Delay(Delay);
-            await Update();
+            Thread.Sleep(Delay);
+            Update();
         }
     }
 
-    private async Task Update()
+    private void Update()
     {
-        foreach (var world in World.AllWorldsReadOnly)
-        {
-            await world.Update();
-        }
+        Task.WaitAll(World.AllWorldsReadOnly.Select(w => w.Update()).ToArray());
     }
 
     public void Dispose()

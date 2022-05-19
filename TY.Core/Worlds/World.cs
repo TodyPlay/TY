@@ -71,10 +71,7 @@ public partial class World : IDisposable
 
     public async Task Update()
     {
-        foreach (var system in _systems)
-        {
-            await system.Update();
-        }
+        await Task.Run(() => Task.WaitAll(_systems.Select(system => system.Update()).ToArray()));
     }
 
     public SystemBase? GetOrCreateSystem(Type type)
