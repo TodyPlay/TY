@@ -69,9 +69,12 @@ public partial class World : IDisposable
         _systems.Sort();
     }
 
-    public async Task Update()
+    public void Update()
     {
-        await Task.Run(() => Task.WaitAll(_systems.Select(system => system.Update()).ToArray()));
+        foreach (var system in _systems)
+        {
+            system.Update();
+        }
     }
 
     public SystemBase? GetOrCreateSystem(Type type)
@@ -93,7 +96,7 @@ public partial class World : IDisposable
 
     private T? GetExistsSystem<T>() where T : SystemBase
     {
-        return (T?) GetExistsSystem(typeof(T));
+        return (T?)GetExistsSystem(typeof(T));
     }
 
     private SystemBase? CreateSystemAndAdd(Type type)
@@ -110,12 +113,12 @@ public partial class World : IDisposable
 
     private T? CreateSystemAndAdd<T>() where T : SystemBase
     {
-        return (T?) CreateSystemAndAdd(typeof(T));
+        return (T?)CreateSystemAndAdd(typeof(T));
     }
 
     private SystemBase? CreateSystem(Type type)
     {
-        return (SystemBase?) Activator.CreateInstance(type);
+        return (SystemBase?)Activator.CreateInstance(type);
     }
 
 

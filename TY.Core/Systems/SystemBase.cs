@@ -12,18 +12,17 @@ public abstract partial class SystemBase
 
     protected TimeData TimeData => EntityManager.World.TimeData;
 
-    public async Task Update()
+    public void Update()
     {
-        await OnUpdate();
+        OnUpdate();
     }
 
     public virtual void Awake()
     {
     }
 
-    protected virtual Task OnUpdate()
+    protected virtual void OnUpdate()
     {
-        return Task.CompletedTask;
     }
 }
 

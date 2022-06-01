@@ -4,12 +4,12 @@ using TY.Worlds;
 
 namespace TY.App;
 
-public class Application : IDisposable
+public class Application
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
     private static readonly Assembly[] FrameworkAssemblies =
-        {Assembly.Load("TY.Core"), Assembly.Load("TY.App")};
+        { Assembly.Load("TY.Core"), Assembly.Load("TY.App") };
 
     private Assembly[] _assemblies;
 
@@ -45,15 +45,9 @@ public class Application : IDisposable
 
     private void Update()
     {
-        Task.WaitAll(World.AllWorldsReadOnly.Select(w => w.Update()).ToArray());
-    }
-
-    public void Dispose()
-    {
-        Enable = false;
         foreach (var world in World.AllWorldsReadOnly)
         {
-            world.Dispose();
+            world.Update();
         }
     }
 }

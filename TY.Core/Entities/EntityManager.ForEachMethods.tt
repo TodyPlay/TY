@@ -113,20 +113,20 @@ public partial class EntitiesForEach
     for (var i = start; i < end; i++)
     {
         WriteLine(
-            $"    public delegate Task {Types(i)}<{Generics(i)}>({Parameters(i)});"
+            $"    public delegate void {Types(i)}<{Generics(i)}>({Parameters(i)});"
             );
         WriteLine("");
     }
     for (var i = start; i < end; i++)
     {
         WriteLine(
-            $@"    public async Task ForEach<{Generics(i)}>({Types(i)}<{Generics
+            $@"    public void ForEach<{Generics(i)}>({Types(i)}<{Generics
                 (i)}> data)
     {{
         var components = EntityManager.FindComponents<{Generics(i)}>();
         foreach (var component in components)
         {{
-            await data.Invoke({InvokeParameters(componentsName, i)});
+            data.Invoke({InvokeParameters(componentsName, i)});
         }}
     }}");
         WriteLine("");
