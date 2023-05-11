@@ -20,7 +20,7 @@ public partial class EntityManager
 
     public Entity CreateEntity()
     {
-        var entity = new Entity(NextEntityId);
+        var entity = new Entity { Index = NextEntityId, Version = 0 };
 
         _entities[entity] = new Dictionary<Type, IComponent>();
 
@@ -54,9 +54,9 @@ public partial class EntityManager
 
         foreach (var (_, components) in _entities)
         {
-            if (components.ContainsKey(type))
+            if (components.TryGetValue(type, out var component))
             {
-                result.Add(components[type]);
+                result.Add(component);
             }
         }
 

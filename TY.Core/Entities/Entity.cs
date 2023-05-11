@@ -3,46 +3,18 @@
 /// <summary>
 /// 实体实例
 /// </summary>
-public class Entity : IEquatable<Entity>
+public class Entity
 {
-    private readonly uint _index;
+    public uint Index { get; init; }
 
-    public uint Index => _index;
+    public uint Version { get; internal set; }
 
-    public uint Version = 0;
-
-    internal Entity(uint index)
+    internal Entity()
     {
-        _index = index;
     }
 
-    public bool Equals(Entity? other)
+    public override string ToString()
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
-        return _index == other._index;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((Entity) obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return (int) _index;
-    }
-
-    public static bool operator ==(Entity? left, Entity? right)
-    {
-        return Equals(left, right);
-    }
-
-    public static bool operator !=(Entity? left, Entity? right)
-    {
-        return !Equals(left, right);
+        return $"{nameof(Index)}: {Index}, {nameof(Version)}: {Version}";
     }
 }
