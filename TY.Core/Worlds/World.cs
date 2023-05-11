@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.Reflection;
 using NLog;
 using TY.Entities;
@@ -7,68 +6,56 @@ using TY.Time;
 
 namespace TY.Worlds;
 
-[Flags]
-public enum WorldType
-{
-    Default = 0
-}
-
-public partial class World : IDisposable
+/// <summary>
+/// 初始化数据
+/// </summary>
+public partial class World
 {
     private Logger _logger = LogManager.GetCurrentClassLogger();
 
-    private static readonly List<World> AllWorlds = new List<World>();
+    internal string Name { get; init; }
 
-    public static IEnumerable<World> AllWorldsReadOnly => new ReadOnlyCollection<World>(AllWorlds);
-
-    private readonly List<SystemBase> _systems = new List<SystemBase>();
-
-    private readonly Dictionary<Type, SystemBase> _systemLookup = new Dictionary<Type, SystemBase>();
-
-    private EntityManager? _entityManager;
-
-    private EntityManager EntityManager => _entityManager ??= new EntityManager(this);
-
-    internal TimeData TimeData { get; } = new();
-
-    private string Name { get; }
-
-    private readonly Assembly[] _assemblies;
+    internal IEnumerable<Assembly> Assemblies { get; init; }
 
     public override string ToString()
     {
         return Name;
     }
+}
 
-    public World(string name) :
-        this(name, AppDomain.CurrentDomain.GetAssemblies())
-    {
-    }
+public partial class World
 
-    public World(string name, Assembly[] assemblies)
-    {
-        Name = name;
-        _assemblies = assemblies;
-        Init();
-    }
+{
+    internal TimeData TimeData { get; } = new();
+    private EntityManager? _entityManager;
+    private EntityManager EntityManager => _entityManager ??= new EntityManager(this);
+}
 
-    private void Init()
+public partial class World
+{
+    private readonly List<SystemBase> _systems = new List<SystemBase>();
+
+    private readonly Dictionary<Type, SystemBase> _systemLookup = new Dictionary<Type, SystemBase>();
+
+    public void Awake()
     {
-        AllWorlds.Add(this);
-        var types = Utility.GetTypesFromAssembly(typeof(SystemBase), _assemblies);
-        foreach (var type in types)
+        foreach (var (type, system) in Utility.GetTypesFromAssembly(typeof(SystemBase), Assemblies)
+                     .Distinct()
+                     .Select(type => (type, CreateSystem(type)))
+                     .Where(x => x.Item2 != null)
+                     .OrderBy(x => x.Item2!.Order)
+                )
         {
-            var system = CreateSystemAndAdd(type);
-            if (system != null)
-            {
-                system.EntityManager = EntityManager;
-                system.Awake();
-            }
+            system!.EntityManager = EntityManager;
+            system.Awake();
+            _systems.Add(system);
+            _systemLookup[type] = system;
         }
-
-        _systems.Sort();
     }
+}
 
+public partial class World
+{
     public void Update()
     {
         foreach (var system in _systems)
@@ -76,7 +63,10 @@ public partial class World : IDisposable
             system.Update();
         }
     }
+}
 
+public partial class World
+{
     public SystemBase? GetOrCreateSystem(Type type)
     {
         var system = GetExistsSystem(type);
@@ -118,17 +108,12 @@ public partial class World : IDisposable
 
     private SystemBase? CreateSystem(Type type)
     {
-        return (SystemBase?)Activator.CreateInstance(type);
+        return Activator.CreateInstance(type) as SystemBase;
     }
 
 
     private T CreateSystem<T>() where T : SystemBase
     {
         return Activator.CreateInstance<T>();
-    }
-
-    public void Dispose()
-    {
-        AllWorlds.Remove(this);
     }
 }

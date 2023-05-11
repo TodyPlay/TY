@@ -10,7 +10,7 @@ public static class Programmer
     public static void Main(string[] args)
     {
         var app = new Application();
-        app.CreateNewWorld("Default World");
+        app.WorldManager.NewWorld("Default World");
         app.Run();
     }
 }

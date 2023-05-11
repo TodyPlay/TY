@@ -8,46 +8,23 @@ public class Application
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-    private static readonly Assembly[] FrameworkAssemblies =
-        { Assembly.Load("TY.Core"), Assembly.Load("TY.App") };
-
-    private Assembly[] _assemblies;
-
     public bool Enable { get; set; } = true;
 
-    public int Delay { get; set; } = 0;
+    /// <summary>
+    /// 默认60帧
+    /// </summary>
+    public int Delay => 1000 / Frame;
 
-    public Application() : this(AppDomain.CurrentDomain.GetAssemblies())
-    {
-    }
+    public int Frame { get; set; } = 60;
 
-    public Application(Assembly[] assemblies)
-    {
-        var list = new List<Assembly>();
-        list.AddRange(assemblies);
-        list.AddRange(FrameworkAssemblies);
-        _assemblies = list.Distinct().ToArray();
-    }
-
-    public World CreateNewWorld(string name)
-    {
-        return new World(name, _assemblies);
-    }
+    public WorldManager WorldManager { get; } = new WorldManager();
 
     public void Run()
     {
         while (Enable)
         {
             Thread.Sleep(Delay);
-            Update();
-        }
-    }
-
-    private void Update()
-    {
-        foreach (var world in World.AllWorldsReadOnly)
-        {
-            world.Update();
+            WorldManager.Update();
         }
     }
 }
