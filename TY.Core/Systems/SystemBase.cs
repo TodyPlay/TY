@@ -6,7 +6,13 @@ namespace TY.Systems;
 
 public abstract partial class SystemBase
 {
-    public EntityManager? EntityManager { get; internal set; } 
+    private EntityManager? _entityManager;
+
+    public EntityManager EntityManager
+    {
+        get => _entityManager!;
+        set => _entityManager = value;
+    }
 
     protected EntitiesForEach Entities => EntityManager!.EntitiesForEach!;
 

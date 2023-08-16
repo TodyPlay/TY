@@ -33,17 +33,17 @@ public partial class World
 
 public partial class World
 {
-    private readonly List<SystemBase> _systems = new List<SystemBase>();
+    private readonly List<SystemBase> _systems = new();
 
-    private readonly Dictionary<Type, SystemBase> _systemLookup = new Dictionary<Type, SystemBase>();
+    private readonly Dictionary<Type, SystemBase> _systemLookup = new();
 
     public void Awake()
     {
         foreach (var (type, system) in Utility.GetTypesFromAssembly(typeof(SystemBase), Assemblies)
                      .Distinct()
-                     .Select(type => (type, CreateSystem(type)))
-                     .Where(x => x.Item2 != null)
-                     .OrderBy(x => x.Item2!.Order)
+                     .Select(type => (type: type, system: CreateSystem(type)))
+                     .Where(x => x.system != null)
+                     .OrderBy(x => x.system!.Order)
                 )
         {
             system!.EntityManager = EntityManager;

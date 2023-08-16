@@ -9,7 +9,7 @@ public partial class EntityManager
 
     private uint NextEntityId => ++_currentId;
 
-    private readonly Dictionary<Entity, Dictionary<Type, IComponent>> _entities = new();
+    private readonly Entities _entities = new();
 
     public World World { get; }
 
@@ -22,7 +22,7 @@ public partial class EntityManager
     {
         var entity = new Entity { Index = NextEntityId, Version = 0 };
 
-        _entities[entity] = new Dictionary<Type, IComponent>();
+        _entities[entity] = new();
 
         return entity;
     }
@@ -30,14 +30,14 @@ public partial class EntityManager
 
     public void AddComponent<T>(Entity entity, T component) where T : class, IComponent
     {
-        var components = _entities[entity];
-        if (components.ContainsKey(typeof(T)))
+        if (_entities.TryGetValue(entity, out var components))
         {
-            return;
+            if (!components.ContainsKey(typeof(T)))
+            {
+                components[typeof(T)] = component;
+                entity.Version++;
+            }
         }
-
-        components[typeof(T)] = component;
-        entity.Version++;
     }
 
     public void AddComponent<T>(Entity entity, params T[] components) where T : class, IComponent

@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using NLog;
+﻿using NLog;
 using TY.Worlds;
 
 namespace TY.App;
@@ -10,14 +9,15 @@ public class Application
 
     public bool Enable { get; set; } = true;
 
-    /// <summary>
-    /// 默认60帧
-    /// </summary>
+
     public int Delay => 1000 / Frame;
 
+    /// <summary>
+    /// 默认60帧每秒
+    /// </summary>
     public int Frame { get; set; } = 60;
 
-    public WorldManager WorldManager { get; } = new WorldManager();
+    public WorldManager WorldManager { get; } = new();
 
     public void Run()
     {
