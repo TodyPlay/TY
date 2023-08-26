@@ -20,7 +20,7 @@ public partial class EntityManager
 
     public Entity CreateEntity()
     {
-        var entity = new Entity { Index = NextEntityId, Version = 0 };
+        var entity = new Entity { Index = NextEntityId };
 
         _entities[entity] = new();
 
@@ -35,7 +35,6 @@ public partial class EntityManager
             if (!components.ContainsKey(typeof(T)))
             {
                 components[typeof(T)] = component;
-                entity.Version++;
             }
         }
     }

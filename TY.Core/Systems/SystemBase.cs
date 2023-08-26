@@ -1,4 +1,3 @@
-using System.Reflection;
 using TY.Entities;
 using TY.Time;
 
@@ -34,5 +33,5 @@ public abstract partial class SystemBase
 
 public partial class SystemBase
 {
-    public int Order => GetType().GetCustomAttribute<SystemOrderAttribute>()?.Order ?? int.MaxValue;
+    public virtual int Order => int.MaxValue;
 }

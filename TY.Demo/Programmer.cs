@@ -1,5 +1,7 @@
+using System.Threading.Tasks;
 using NLog;
 using TY.App;
+using TY.Demo.Systems;
 
 namespace TY.Demo;
 
@@ -10,7 +12,10 @@ public static class Programmer
     public static void Main(string[] args)
     {
         var app = new Application();
-        app.WorldManager.NewWorld("Default World");
-        app.Run();
+        var world = app.CreateWorld("Default World");
+        world.AddSystem<DataDemoSystem>();
+        world.AddSystem<TimeDataDemoSystem>();
+
+        Task.Run(() => { app.Run(); });
     }
 }

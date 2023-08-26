@@ -17,14 +17,20 @@ public class Application
     /// </summary>
     public int Frame { get; set; } = 60;
 
-    public WorldManager WorldManager { get; } = new();
+    private WorldManager WorldManager { get; } = new();
+
 
     public void Run()
     {
         while (Enable)
         {
-            Thread.Sleep(Delay);
+            Task.Delay(Delay);
             WorldManager.Update();
         }
+    }
+
+    public World CreateWorld(string worldName)
+    {
+        return WorldManager.CreateWorld(worldName);
     }
 }

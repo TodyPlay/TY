@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TY.Demo", "TY.Demo\TY.Demo.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TY.App", "TY.App\TY.App.csproj", "{9CA9C42D-B4E7-4F09-A3EA-9CA92B636E21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TY.Network", "TY.Network\TY.Network.csproj", "{102F22D3-F409-4D6B-911E-7821DA8111C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{9CA9C42D-B4E7-4F09-A3EA-9CA92B636E21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CA9C42D-B4E7-4F09-A3EA-9CA92B636E21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CA9C42D-B4E7-4F09-A3EA-9CA92B636E21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{102F22D3-F409-4D6B-911E-7821DA8111C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{102F22D3-F409-4D6B-911E-7821DA8111C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{102F22D3-F409-4D6B-911E-7821DA8111C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{102F22D3-F409-4D6B-911E-7821DA8111C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

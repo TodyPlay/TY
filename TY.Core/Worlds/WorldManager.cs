@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿using TY.Time;
 
 namespace TY.Worlds;
 
@@ -7,29 +7,16 @@ public partial class WorldManager
     /// <summary>
     /// 所有世界
     /// </summary>
-    public Dictionary<string, World> Worlds = new Dictionary<string, World>();
-
-    /// <summary>
-    /// 框架程序集
-    /// </summary>
-    private static readonly string[] FrameworkAssemblies =
-    {
-        "TY.Core"
-    };
+    private readonly Dictionary<string, World> _worlds = new();
 }
 
 public partial class WorldManager
 {
-    public World NewWorld(string name)
-    {
-        return NewWorld(name, AppDomain.CurrentDomain.GetAssemblies());
-    }
-
-    public World NewWorld(string name, IEnumerable<Assembly> assemblies)
+    public World CreateWorld(string name)
     {
         if (name == null) throw new ArgumentNullException(nameof(name));
 
-        if (Worlds.TryGetValue(name, out var exists))
+        if (_worlds.TryGetValue(name, out var exists))
         {
             return exists;
         }
@@ -37,12 +24,11 @@ public partial class WorldManager
         var newWorld = new World
         {
             Name = name,
-            Assemblies = FrameworkAssemblies.Select(Assembly.Load).Concat(assemblies),
         };
 
-        newWorld.Awake();
+        newWorld.AddSystem<TimeUpdateSystem>();
 
-        return Worlds[name] = newWorld;
+        return _worlds[name] = newWorld;
     }
 }
 
@@ -50,7 +36,7 @@ public partial class WorldManager
 {
     public void Update()
     {
-        foreach (var (_, world) in Worlds)
+        foreach (var (_, world) in _worlds)
         {
             world.Update();
         }
