@@ -7,30 +7,38 @@ public class Application
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-    public bool Enable { get; set; } = true;
+    /// <summary>
+    /// 是否启动
+    /// </summary>
+    private bool _enable = true;
 
-
-    public int Delay => 1000 / Frame;
+    public bool Enable
+    {
+        get => _enable;
+        set
+        {
+            _enable = value;
+            Log.Warn("应用程序禁用");
+        }
+    }
 
     /// <summary>
     /// 默认60帧每秒
     /// </summary>
     public int Frame { get; set; } = 60;
 
-    private WorldManager WorldManager { get; } = new();
+    public int Delay => 1000 / Frame;
+
+
+    public WorldManager WorldManager { get; } = new();
 
 
     public void Run()
     {
         while (Enable)
         {
-            Task.Delay(Delay);
+            Thread.Sleep(Delay);
             WorldManager.Update();
         }
-    }
-
-    public World CreateWorld(string worldName)
-    {
-        return WorldManager.CreateWorld(worldName);
     }
 }

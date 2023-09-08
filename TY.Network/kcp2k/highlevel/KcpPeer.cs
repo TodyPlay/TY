@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Net.Sockets;
 using TY.Network.kcp2k.kcp;
 
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 enum KcpState
 {
@@ -366,8 +366,8 @@ public class KcpPeer
 
                     // store the cookie bytes to avoid int->byte[] conversions when sending.
                     // still convert to uint once, just for prettier logging.
-                    Buffer.BlockCopy(message.Array, message.Offset, receivedCookie, 0, 4);
-                    uint prettyCookie = BitConverter.ToUInt32(message.Array, message.Offset);
+                    Buffer.BlockCopy(message.Array!, message.Offset, receivedCookie, 0, 4);
+                    uint prettyCookie = BitConverter.ToUInt32(message.Array!, message.Offset);
 
                     Log.Info($"KcpPeer: received handshake with cookie={prettyCookie}");
                     state = KcpState.Authenticated;
@@ -558,7 +558,7 @@ public class KcpPeer
     void OnRawInputReliable(ArraySegment<byte> message)
     {
         // input into kcp, but skip channel byte
-        int input = kcp.Input(message.Array, message.Offset, message.Count);
+        int input = kcp.Input(message.Array!, message.Offset, message.Count);
         if (input != 0)
         {
             // GetType() shows Server/ClientConn instead of just Connection.
@@ -627,10 +627,10 @@ public class KcpPeer
 
         // parse channel
         // byte channel = segment[0]; ArraySegment[i] isn't supported in some older Unity Mono versions
-        byte channel = segment.Array[segment.Offset + 0];
+        var channel = segment.Array![segment.Offset + 0];
 
         // parse cookie
-        uint messageCookie = BitConverter.ToUInt32(segment.Array, segment.Offset + 1);
+        var messageCookie = BitConverter.ToUInt32(segment.Array, segment.Offset + 1);
 
         // compare cookie to protect against UDP spoofing.
         // messages won't have a cookie until after handshake.
@@ -643,7 +643,7 @@ public class KcpPeer
         }
 
         // parse message
-        ArraySegment<byte> message =
+        var message =
             new ArraySegment<byte>(segment.Array, segment.Offset + 1 + 4, segment.Count - 1 - 4);
 
         switch (channel)
@@ -706,7 +706,7 @@ public class KcpPeer
 
         // write data (if any)
         if (content.Count > 0)
-            Buffer.BlockCopy(content.Array, content.Offset, kcpSendBuffer, 1, content.Count);
+            Buffer.BlockCopy(content.Array!, content.Offset, kcpSendBuffer, 1, content.Count);
 
         // send to kcp for processing
         int sent = kcp.Send(kcpSendBuffer, 0, 1 + content.Count);
@@ -718,7 +718,7 @@ public class KcpPeer
         }
     }
 
-    void SendUnreliable(ArraySegment<byte> message)
+    private void SendUnreliable(ArraySegment<byte> message)
     {
         // message size needs to be <= unreliable max size
         if (message.Count > unreliableMax)
@@ -740,7 +740,7 @@ public class KcpPeer
 
         // write data
         // from 5, with N bytes
-        Buffer.BlockCopy(message.Array, message.Offset, rawSendBuffer, 1 + 4, message.Count);
+        Buffer.BlockCopy(message.Array!, message.Offset, rawSendBuffer, 1 + 4, message.Count);
 
         // IO send
         ArraySegment<byte> segment = new ArraySegment<byte>(rawSendBuffer, 0, message.Count + 1 + 4);

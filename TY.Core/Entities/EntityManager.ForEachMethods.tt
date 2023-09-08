@@ -109,6 +109,8 @@ namespace TY.Entities;
 #>
 public partial class EntitiesForEach
 {
+    public delegate void V0();
+
 <#
     for (var i = start; i < end; i++)
     {
@@ -117,6 +119,12 @@ public partial class EntitiesForEach
             );
         WriteLine("");
     }
+#>
+    public void ForEach(V0 v0)
+    {
+    }
+
+<#
     for (var i = start; i < end; i++)
     {
         WriteLine(

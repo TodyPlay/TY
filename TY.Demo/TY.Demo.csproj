@@ -19,6 +19,7 @@
     <ItemGroup>
         <ProjectReference Include="..\TY.App\TY.App.csproj" />
         <ProjectReference Include="..\TY.Core\TY.Core.csproj" />
+        <ProjectReference Include="..\TY.Network\TY.Network.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -26,5 +27,7 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
+
+
 
 </Project>

@@ -1,7 +1,7 @@
 // kcp specific error codes to allow for error switching, localization,
 // translation to Mirror errors, etc.
 
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 public enum ErrorCode : byte
 {

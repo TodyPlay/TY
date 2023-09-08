@@ -992,7 +992,7 @@ public class Kcp
         }
 
         // slap is time since last flush in milliseconds
-        int slap = Utils.TimeDiff(current, ts_flush);
+        var slap = Utils.TimeDiff(current, ts_flush);
 
         // hard limit: if 10s elapsed, always flush no matter what
         if (slap >= 10000 || slap < -10000)

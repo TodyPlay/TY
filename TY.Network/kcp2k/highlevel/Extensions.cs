@@ -1,13 +1,13 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 public static class Extensions
 {
     // ArraySegment as HexString for convenience
     public static string ToHexString(this ArraySegment<byte> segment) =>
-        BitConverter.ToString(segment.Array, segment.Offset, segment.Count);
+        BitConverter.ToString(segment.Array!, segment.Offset, segment.Count);
 
     // non-blocking UDP send.
     // allows for reuse when overwriting KcpServer/Client (i.e. for relays).
@@ -30,7 +30,7 @@ public static class Extensions
             // send to the the endpoint.
             // do not send to 'newClientEP', as that's always reused.
             // fixes https://github.com/MirrorNetworking/Mirror/issues/3296
-            socket.SendTo(data.Array, data.Offset, data.Count, SocketFlags.None, remoteEP);
+            socket.SendTo(data.Array!, data.Offset, data.Count, SocketFlags.None, remoteEP);
             return true;
         }
         catch (SocketException e)
@@ -63,7 +63,7 @@ public static class Extensions
             if (!socket.Poll(0, SelectMode.SelectWrite)) return false;
 
             // SendTo allocates. we used bound Send.
-            socket.Send(data.Array, data.Offset, data.Count, SocketFlags.None);
+            socket.Send(data.Array!, data.Offset, data.Count, SocketFlags.None);
             return true;
         }
         catch (SocketException e)

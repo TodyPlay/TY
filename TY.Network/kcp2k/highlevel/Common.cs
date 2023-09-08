@@ -2,12 +2,12 @@ using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 public static class Common
 {
     // helper function to resolve host to IPAddress
-    public static bool ResolveHostname(string hostname, out IPAddress[] addresses)
+    public static bool ResolveHostname(string hostname, out IPAddress[]? addresses)
     {
         try
         {
@@ -64,12 +64,12 @@ public static class Common
     // cookies need to be generated with a secure random generator.
     // we don't want them to be deterministic / predictable.
     // RNG is cached to avoid runtime allocations.
-    static readonly RNGCryptoServiceProvider cryptoRandom = new RNGCryptoServiceProvider();
-    static readonly byte[] cryptoRandomBuffer = new byte[4];
+    private static readonly RandomNumberGenerator CryptoRandom = RandomNumberGenerator.Create();
+    private static readonly byte[] CryptoRandomBuffer = new byte[4];
 
     public static uint GenerateCookie()
     {
-        cryptoRandom.GetBytes(cryptoRandomBuffer);
-        return BitConverter.ToUInt32(cryptoRandomBuffer, 0);
+        CryptoRandom.GetBytes(CryptoRandomBuffer);
+        return BitConverter.ToUInt32(CryptoRandomBuffer, 0);
     }
 }

@@ -22,13 +22,13 @@ public partial class EntityManager
     {
         var entity = new Entity { Index = NextEntityId };
 
-        _entities[entity] = new();
+        _entities[entity] = new Components();
 
         return entity;
     }
 
 
-    public void AddComponent<T>(Entity entity, T component) where T : class, IComponent
+    public void AddComponent<T>(Entity entity, T component) where T : class, IComponentData
     {
         if (_entities.TryGetValue(entity, out var components))
         {
@@ -39,7 +39,7 @@ public partial class EntityManager
         }
     }
 
-    public void AddComponent<T>(Entity entity, params T[] components) where T : class, IComponent
+    public void AddComponent<T>(Entity entity, params T[] components) where T : class, IComponentData
     {
         foreach (var component in components)
         {
@@ -47,9 +47,9 @@ public partial class EntityManager
         }
     }
 
-    public List<IComponent> FindComponents(Type type)
+    public List<IComponentData> FindComponents(Type type)
     {
-        var result = new List<IComponent>();
+        var result = new List<IComponentData>();
 
         foreach (var (_, components) in _entities)
         {
@@ -62,9 +62,9 @@ public partial class EntityManager
         return result;
     }
 
-    public List<IComponent[]> FindComponents(params Type[] types)
+    public List<IComponentData[]> FindComponents(params Type[] types)
     {
-        var result = new List<IComponent[]>();
+        var result = new List<IComponentData[]>();
 
         foreach (var (_, components) in _entities)
         {

@@ -2,7 +2,7 @@
 
 using TY.Network.kcp2k.kcp;
 
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 // [Serializable] to show it in Unity inspector.
 // 'class' so we can set defaults easily.
@@ -68,30 +68,44 @@ public class KcpConfig
     // constructor with defaults for convenience.
     // makes it easy to define "new KcpConfig(DualMode=false)" etc.
     public KcpConfig(
-        bool DualMode = true,
-        int RecvBufferSize = 1024 * 1024 * 7,
-        int SendBufferSize = 1024 * 1024 * 7,
-        int Mtu = Kcp.MTU_DEF,
-        bool NoDelay = true,
-        uint Interval = 10,
-        int FastResend = 0,
-        bool CongestionWindow = false,
-        uint SendWindowSize = Kcp.WND_SND,
-        uint ReceiveWindowSize = Kcp.WND_RCV,
-        int Timeout = KcpPeer.DEFAULT_TIMEOUT,
-        uint MaxRetransmits = Kcp.DEADLINK)
+        bool dualMode = true,
+        int recvBufferSize = 1024 * 1024 * 7,
+        int sendBufferSize = 1024 * 1024 * 7,
+        int mtu = Kcp.MTU_DEF,
+        bool noDelay = true,
+        uint interval = 10,
+        int fastResend = 0,
+        bool congestionWindow = false,
+        uint sendWindowSize = Kcp.WND_SND,
+        uint receiveWindowSize = Kcp.WND_RCV,
+        int timeout = KcpPeer.DEFAULT_TIMEOUT,
+        uint maxRetransmits = Kcp.DEADLINK)
     {
-        this.DualMode = DualMode;
-        this.RecvBufferSize = RecvBufferSize;
-        this.SendBufferSize = SendBufferSize;
-        this.Mtu = Mtu;
-        this.NoDelay = NoDelay;
-        this.Interval = Interval;
-        this.FastResend = FastResend;
-        this.CongestionWindow = CongestionWindow;
-        this.SendWindowSize = SendWindowSize;
-        this.ReceiveWindowSize = ReceiveWindowSize;
-        this.Timeout = Timeout;
-        this.MaxRetransmits = MaxRetransmits;
+        this.DualMode = dualMode;
+        this.RecvBufferSize = recvBufferSize;
+        this.SendBufferSize = sendBufferSize;
+        this.Mtu = mtu;
+        this.NoDelay = noDelay;
+        this.Interval = interval;
+        this.FastResend = fastResend;
+        this.CongestionWindow = congestionWindow;
+        this.SendWindowSize = sendWindowSize;
+        this.ReceiveWindowSize = receiveWindowSize;
+        this.Timeout = timeout;
+        this.MaxRetransmits = maxRetransmits;
+    }
+
+    public static KcpConfig CreateDefault()
+    {
+        return new KcpConfig(
+            noDelay: true,
+            dualMode: false,
+            interval: 1,
+            timeout: 2000,
+            sendWindowSize: Kcp.WND_SND * 1000,
+            receiveWindowSize: Kcp.WND_RCV * 1000,
+            congestionWindow: false,
+            maxRetransmits: Kcp.DEADLINK * 2
+        );
     }
 }

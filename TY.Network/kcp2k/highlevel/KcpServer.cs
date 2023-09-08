@@ -4,7 +4,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 public class KcpServer
 {
@@ -22,49 +22,48 @@ public class KcpServer
     protected readonly Action<int, ErrorCode, string> OnError;
 
     // configuration
-    protected readonly KcpConfig config;
+    protected readonly KcpConfig Config;
 
     // state
-    protected Socket socket;
-    EndPoint newClientEP;
+    protected Socket? Socket;
+    private EndPoint _newClientEp;
 
     // raw receive buffer always needs to be of 'MTU' size, even if
     // MaxMessageSize is larger. kcp always sends in MTU segments and having
     // a buffer smaller than MTU would silently drop excess data.
     // => we need the mtu to fit channel + message!
-    protected readonly byte[] rawReceiveBuffer;
+    protected readonly byte[] RawReceiveBuffer;
 
     // connections <connectionId, connection> where connectionId is EndPoint.GetHashCode
-    public Dictionary<int, KcpServerConnection> connections =
-        new Dictionary<int, KcpServerConnection>();
+    public readonly Dictionary<int, KcpServerConnection> Connections = new();
 
-    public KcpServer(Action<int> OnConnected,
-        Action<int, ArraySegment<byte>, KcpChannel> OnData,
-        Action<int> OnDisconnected,
-        Action<int, ErrorCode, string> OnError,
+    public KcpServer(Action<int> onConnected,
+        Action<int, ArraySegment<byte>, KcpChannel> onData,
+        Action<int> onDisconnected,
+        Action<int, ErrorCode, string> onError,
         KcpConfig config)
     {
         // initialize callbacks first to ensure they can be used safely.
-        this.OnConnected = OnConnected;
-        this.OnData = OnData;
-        this.OnDisconnected = OnDisconnected;
-        this.OnError = OnError;
-        this.config = config;
+        this.OnConnected = onConnected;
+        this.OnData = onData;
+        this.OnDisconnected = onDisconnected;
+        this.OnError = onError;
+        this.Config = config;
 
         // create mtu sized receive buffer
-        rawReceiveBuffer = new byte[config.Mtu];
+        RawReceiveBuffer = new byte[config.Mtu];
 
         // create newClientEP either IPv4 or IPv6
-        newClientEP = config.DualMode
+        _newClientEp = config.DualMode
             ? new IPEndPoint(IPAddress.IPv6Any, 0)
             : new IPEndPoint(IPAddress.Any, 0);
     }
 
-    public virtual bool IsActive() => socket != null;
+    public virtual bool IsActive() => Socket != null;
 
-    static Socket CreateServerSocket(bool DualMode, ushort port)
+    static Socket CreateServerSocket(bool dualMode, ushort port)
     {
-        if (DualMode)
+        if (dualMode)
         {
             // IPv6 socket with DualMode @ "::" : port
             Socket socket = new Socket(AddressFamily.InterNetworkV6, SocketType.Dgram, ProtocolType.Udp);
@@ -96,46 +95,46 @@ public class KcpServer
     public virtual void Start(ushort port)
     {
         // only start once
-        if (socket != null)
+        if (Socket != null)
         {
             Log.Warning("KcpServer: already started!");
             return;
         }
 
         // listen
-        socket = CreateServerSocket(config.DualMode, port);
+        Socket = CreateServerSocket(Config.DualMode, port);
 
         // recv & send are called from main thread.
         // need to ensure this never blocks.
         // even a 1ms block per connection would stop us from scaling.
-        socket.Blocking = false;
+        Socket.Blocking = false;
 
         // configure buffer sizes
-        Common.ConfigureSocketBuffers(socket, config.RecvBufferSize, config.SendBufferSize);
+        Common.ConfigureSocketBuffers(Socket, Config.RecvBufferSize, Config.SendBufferSize);
     }
 
     public void Send(int connectionId, ArraySegment<byte> segment, KcpChannel channel)
     {
-        if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
+        if (Connections.TryGetValue(connectionId, out var connection))
         {
-            connection.peer.SendData(segment, channel);
+            connection.Peer!.SendData(segment, channel);
         }
     }
 
     public void Disconnect(int connectionId)
     {
-        if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
+        if (Connections.TryGetValue(connectionId, out var connection))
         {
-            connection.peer.Disconnect();
+            connection.Peer!.Disconnect();
         }
     }
 
     // expose the whole IPEndPoint, not just the IP address. some need it.
-    public IPEndPoint GetClientEndPoint(int connectionId)
+    public IPEndPoint? GetClientEndPoint(int connectionId)
     {
-        if (connections.TryGetValue(connectionId, out KcpServerConnection connection))
+        if (Connections.TryGetValue(connectionId, out KcpServerConnection connection))
         {
-            return connection.remoteEndPoint as IPEndPoint;
+            return connection.RemoteEndPoint as IPEndPoint;
         }
 
         return null;
@@ -150,14 +149,14 @@ public class KcpServer
     {
         segment = default;
         connectionId = 0;
-        if (socket == null) return false;
+        if (Socket == null) return false;
 
         try
         {
-            if (socket.ReceiveFromNonBlocking(rawReceiveBuffer, out segment, ref newClientEP))
+            if (Socket.ReceiveFromNonBlocking(RawReceiveBuffer, out segment, ref _newClientEp))
             {
                 // set connectionId to hash from endpoint
-                connectionId = Common.ConnectionHash(newClientEP);
+                connectionId = Common.ConnectionHash(_newClientEp);
                 return true;
             }
         }
@@ -179,7 +178,7 @@ public class KcpServer
     protected virtual void RawSend(int connectionId, ArraySegment<byte> data)
     {
         // get the connection's endpoint
-        if (!connections.TryGetValue(connectionId, out KcpServerConnection connection))
+        if (!Connections.TryGetValue(connectionId, out var connection))
         {
             Log.Warning($"KcpServer: RawSend invalid connectionId={connectionId}");
             return;
@@ -187,7 +186,7 @@ public class KcpServer
 
         try
         {
-            socket.SendToNonBlocking(data, connection.remoteEndPoint);
+            Socket!.SendToNonBlocking(data, connection.RemoteEndPoint);
         }
         catch (SocketException e)
         {
@@ -197,26 +196,25 @@ public class KcpServer
 
     protected virtual KcpServerConnection CreateConnection(int connectionId)
     {
-        // events need to be wrapped with connectionIds
-        Action<ArraySegment<byte>> RawSendWrap =
-            data => RawSend(connectionId, data);
-
         // create empty connection without peer first.
         // we need it to set up peer callbacks.
         // afterwards we assign the peer.
-        KcpServerConnection connection = new KcpServerConnection(newClientEP);
+        KcpServerConnection connection = new KcpServerConnection(_newClientEp);
 
         // generate a random cookie for this connection to avoid UDP spoofing.
         // needs to be random, but without allocations to avoid GC.
-        uint cookie = Common.GenerateCookie();
+        var cookie = Common.GenerateCookie();
 
         // set up peer with callbacks
-        KcpPeer peer = new KcpPeer(RawSendWrap, OnAuthenticatedWrap, OnDataWrap, OnDisconnectedWrap, OnErrorWrap,
-            config, cookie);
+        var peer = new KcpPeer(RawSendWrap, OnAuthenticatedWrap, OnDataWrap, OnDisconnectedWrap, OnErrorWrap,
+            Config, cookie);
 
         // assign peer to connection
-        connection.peer = peer;
+        connection.Peer = peer;
         return connection;
+
+        // events need to be wrapped with connectionIds
+        void RawSendWrap(ArraySegment<byte> data) => RawSend(connectionId, data);
 
         // setup authenticated event that also adds to connections
         void OnAuthenticatedWrap()
@@ -225,10 +223,10 @@ public class KcpServer
             // handshake in OnAuthenticated.
             // we don't want to reply to random internet messages
             // with handshakes each time.
-            connection.peer.SendHandshake();
+            connection.Peer!.SendHandshake();
 
             // add to connections dict after being authenticated.
-            connections.Add(connectionId, connection);
+            Connections.Add(connectionId, connection);
             Log.Info($"KcpServer: added connection({connectionId})");
 
             // setup Data + Disconnected events only AFTER the
@@ -256,7 +254,7 @@ public class KcpServer
             // flag for removal
             // (can't remove directly because connection is updated
             //  and event is called while iterating all connections)
-            connectionsToRemove.Add(connectionId);
+            _connectionsToRemove.Add(connectionId);
 
             // call mirror event
             Log.Info($"KcpServer: OnDisconnected({connectionId})");
@@ -271,12 +269,12 @@ public class KcpServer
 
     // receive + add + process once.
     // best to call this as long as there is more data to receive.
-    void ProcessMessage(ArraySegment<byte> segment, int connectionId)
+    private void ProcessMessage(ArraySegment<byte> segment, int connectionId)
     {
         //Log.Info($"KCP: server raw recv {msgLength} bytes = {BitConverter.ToString(buffer, 0, msgLength)}");
 
         // is this a new connection?
-        if (!connections.TryGetValue(connectionId, out KcpServerConnection connection))
+        if (!Connections.TryGetValue(connectionId, out var connection))
         {
             // create a new KcpConnection based on last received
             // EndPoint. can be overwritten for where-allocation.
@@ -305,8 +303,8 @@ public class KcpServer
             // connected event was set up.
             // tick will process the first message and adds the
             // connection if it was the handshake.
-            connection.peer.RawInput(segment);
-            connection.peer.TickIncoming();
+            connection.Peer!.RawInput(segment);
+            connection.Peer!.TickIncoming();
 
             // again, do not add to connections.
             // if the first message wasn't the kcp handshake then
@@ -315,38 +313,38 @@ public class KcpServer
         // existing connection: simply input the message into kcp
         else
         {
-            connection.peer.RawInput(segment);
+            connection.Peer!.RawInput(segment);
         }
     }
 
     // process incoming messages. should be called before updating the world.
     // virtual because relay may need to inject their own ping or similar.
-    readonly HashSet<int> connectionsToRemove = new HashSet<int>();
+    private readonly HashSet<int> _connectionsToRemove = new();
 
     public virtual void TickIncoming()
     {
         // input all received messages into kcp
-        while (RawReceiveFrom(out ArraySegment<byte> segment, out int connectionId))
+        while (RawReceiveFrom(out var segment, out var connectionId))
         {
             ProcessMessage(segment, connectionId);
         }
 
         // process inputs for all server connections
         // (even if we didn't receive anything. need to tick ping etc.)
-        foreach (KcpServerConnection connection in connections.Values)
+        foreach (var connection in Connections.Values)
         {
-            connection.peer.TickIncoming();
+            connection.Peer!.TickIncoming();
         }
 
         // remove disconnected connections
         // (can't do it in connection.OnDisconnected because Tick is called
         //  while iterating connections)
-        foreach (int connectionId in connectionsToRemove)
+        foreach (var connectionId in _connectionsToRemove)
         {
-            connections.Remove(connectionId);
+            Connections.Remove(connectionId);
         }
 
-        connectionsToRemove.Clear();
+        _connectionsToRemove.Clear();
     }
 
     // process outgoing messages. should be called after updating the world.
@@ -354,9 +352,9 @@ public class KcpServer
     public virtual void TickOutgoing()
     {
         // flush all server connections
-        foreach (KcpServerConnection connection in connections.Values)
+        foreach (var connection in Connections.Values)
         {
-            connection.peer.TickOutgoing();
+            connection.Peer!.TickOutgoing();
         }
     }
 
@@ -373,8 +371,8 @@ public class KcpServer
     {
         // need to clear connections, otherwise they are in next session.
         // fixes https://github.com/vis2k/kcp2k/pull/47
-        connections.Clear();
-        socket?.Close();
-        socket = null;
+        Connections.Clear();
+        Socket!.Close();
+        Socket = null;
     }
 }

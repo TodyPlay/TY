@@ -1,4 +1,4 @@
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 // channel type and header for raw messages
 public enum KcpChannel : byte

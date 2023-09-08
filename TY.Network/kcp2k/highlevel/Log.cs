@@ -2,7 +2,7 @@
 // Can also do Logger.LogMethod = Debug.Log for Unity etc.
 // (this way we don't have to depend on UnityEngine)
 
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 public static class Log
 {

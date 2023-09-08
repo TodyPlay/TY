@@ -6,6 +6,6 @@ public class Entities : Dictionary<Entity, Components>
 {
 }
 
-public class Components : Dictionary<Type, IComponent>
+public class Components : Dictionary<Type, IComponentData>
 {
 }

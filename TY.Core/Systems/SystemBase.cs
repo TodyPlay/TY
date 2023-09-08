@@ -1,5 +1,6 @@
 using TY.Entities;
 using TY.Time;
+using TY.Worlds;
 
 namespace TY.Systems;
 
@@ -13,9 +14,12 @@ public abstract partial class SystemBase
         set => _entityManager = value;
     }
 
-    protected EntitiesForEach Entities => EntityManager!.EntitiesForEach!;
+    protected EntitiesForEach Entities => EntityManager.EntitiesForEach;
 
-    protected TimeData TimeData => EntityManager!.World.TimeData;
+    protected World World => EntityManager.World;
+
+    protected TimeData TimeData => World.TimeData;
+
 
     public void Update()
     {
@@ -31,6 +35,9 @@ public abstract partial class SystemBase
     }
 }
 
+/// <summary>
+/// 排序
+/// </summary>
 public partial class SystemBase
 {
     public virtual int Order => int.MaxValue;

@@ -26,9 +26,14 @@ public partial class WorldManager
             Name = name,
         };
 
-        newWorld.AddSystem<TimeUpdateSystem>();
+        newWorld.CreateAndGetSystem<TimeUpdateSystem>();
 
         return _worlds[name] = newWorld;
+    }
+
+    public World? GetWorld(string name)
+    {
+        return _worlds.TryGetValue(name, out var value) ? value : null;
     }
 }
 

@@ -47,12 +47,12 @@ public partial class World
 
 public partial class World
 {
-    public T AddSystem<T>() where T : SystemBase, new()
+    public T CreateAndGetSystem<T>() where T : SystemBase, new()
     {
-        return AddSystem(new T());
+        return CreateAndGetSystem(new T());
     }
 
-    public T AddSystem<T>(T system) where T : SystemBase
+    public T CreateAndGetSystem<T>(T system) where T : SystemBase
     {
         if (_systemLookup.TryGetValue(typeof(T), out var exists))
         {

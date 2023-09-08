@@ -1,4 +1,4 @@
-namespace TY.Network.kcp2k.highlevel;
+namespace TY.Network.kcp2k.highLevel;
 
 // header for messages processed by kcp.
 // this is NOT for the raw receive messages(!) because handshake/disconnect
