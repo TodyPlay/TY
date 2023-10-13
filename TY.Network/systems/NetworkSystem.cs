@@ -23,7 +23,7 @@ public class NetworkSystem : SystemBase
         _kcpServer!.Start();
     }
 
-    protected override void OnUpdate()
+    public override void Update()
     {
         _kcpServer!.Update();
     }

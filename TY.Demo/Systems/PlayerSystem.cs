@@ -21,17 +21,20 @@ public class PlayerSystem : SystemBase
         _networkSystem.OnConnection += CreateNewPlayer;
     }
 
-    protected override void OnUpdate()
+    public override void Update()
     {
-        Entities.ForEach((PlayerInfo player) => { player.Position += Vector3.One; });
-
-        Entities.ForEach((PlayerInfo playerInfo, NetworkComponent networkComponent) =>
+        foreach (var player in EntityManager.Query<PlayerInfo>())
         {
-            if (playerInfo.Position.X % 10 == 0)
+            player.Position += Vector3.One;
+        }
+
+        foreach (var (player, networkComponent) in EntityManager.Query<PlayerInfo, NetworkComponent>())
+        {
+            if (player.Position.X % 10 == 0)
             {
-                networkComponent.SendData(playerInfo);
+                networkComponent.SendData(player);
             }
-        });
+        }
     }
 
 

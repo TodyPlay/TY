@@ -47,33 +47,15 @@ public partial class EntityManager
         }
     }
 
-    public List<IComponentData> FindComponents(Type type)
+    public IEnumerable<IComponentData> FindComponents(Type type)
     {
-        var result = new List<IComponentData>();
-
-        foreach (var (_, components) in _entities)
-        {
-            if (components.TryGetValue(type, out var component))
-            {
-                result.Add(component);
-            }
-        }
-
-        return result;
+        return _entities.Values.Where(dics => dics.ContainsKey(type))
+            .Select(dics => dics.Where(pair => pair.Key == type).Select(pair => pair.Value).First());
     }
 
-    public List<IComponentData[]> FindComponents(params Type[] types)
+    public IEnumerable<IComponentData[]> FindComponents(params Type[] types)
     {
-        var result = new List<IComponentData[]>();
-
-        foreach (var (_, components) in _entities)
-        {
-            if (types.All(type => components.ContainsKey(type)))
-            {
-                result.Add(types.Select(v => components[v]).ToArray());
-            }
-        }
-
-        return result;
+        return _entities.Values.Where(dics => types.All(type => dics.Keys.Contains(type)))
+            .Select(dics => dics.Where(pair => types.Contains(pair.Key)).Select(pair => pair.Value).ToArray());
     }
 }

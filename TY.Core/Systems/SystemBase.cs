@@ -22,17 +22,10 @@ public abstract partial class SystemBase
         set => _entityManager = value;
     }
 
-    protected EntitiesForEach Entities => EntityManager.EntitiesForEach;
-
     protected World World => EntityManager.World;
 
     protected TimeData TimeData => World.TimeData;
 
-
-    internal void Update()
-    {
-        OnUpdate();
-    }
 
     /// <summary>
     /// 当成构造方法使用
@@ -48,7 +41,7 @@ public abstract partial class SystemBase
     {
     }
 
-    protected virtual void OnUpdate()
+    public virtual void Update()
     {
     }
 }

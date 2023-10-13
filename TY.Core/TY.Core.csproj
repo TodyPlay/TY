@@ -13,17 +13,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Entities\EntityManager.ForEachMethods.tt">
+      <None Update="Entities\EntityManager.Query.tt">
         <Generator>TextTemplatingFileGenerator</Generator>
-        <LastGenOutput>EntityManager.ForEachMethods.cs</LastGenOutput>
+        <LastGenOutput>EntityManager.Query.cs</LastGenOutput>
       </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Entities\EntityManager.ForEachMethods.cs">
+      <Compile Update="Entities\EntityManager.Query.cs">
         <AutoGen>True</AutoGen>
         <DesignTime>True</DesignTime>
-        <DependentUpon>EntityManager.ForEachMethods.tt</DependentUpon>
+        <DependentUpon>EntityManager.Query.tt</DependentUpon>
       </Compile>
     </ItemGroup>
 </Project>
