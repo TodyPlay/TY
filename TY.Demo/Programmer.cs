@@ -13,11 +13,11 @@ public static class Programmer
     {
         var application = new Application();
 
-        var world = application.WorldManager.CreateWorld("1");
+        var world = application.CreateWorld();
         world.CreateAndGetSystem<NetworkSystem>();
         world.CreateAndGetSystem<PlayerSystem>();
+        world.CreateAndGetSystem<ShowTimeSystem>();
 
         application.Run();
-
     }
 }

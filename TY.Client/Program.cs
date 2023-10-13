@@ -1,27 +1,31 @@
 ﻿using System.Text;
-using TY.Network.kcp2k.highLevel;
+using System.Threading.Channels;
+using NLog;
+using TY.Network.kcp2k.highLevel2;
 
-var client = new KcpClient(
-    onConnected: () => { Console.WriteLine($"连接成功"); },
-    onData: (bytes, channel) => { Console.WriteLine(Encoding.Default.GetString(bytes)); },
-    onDisconnected: () => { Console.WriteLine("关闭连接"); },
-    onError: (code, message) => { Console.WriteLine($"错误：{code},{message}"); },
-    KcpConfig.CreateDefault()
-);
+var logger = LogManager.GetCurrentClassLogger();
 
+var kcpClient = new KcpClient();
+kcpClient.OnData += bytes => logger.Debug(Encoding.Default.GetString(bytes));
+kcpClient.OnConnected += () => { logger.Debug("连接成功"); };
+kcpClient.Connect("127.0.0.1", 9700);
 
-client.Connect("127.0.0.1", 9700);
-
-Thread.Sleep(20);
-
-Task.Run(() =>
+new Thread(() =>
 {
     while (true)
     {
-        Thread.Sleep(10);
-        client.Tick();
+        Thread.Sleep(100);
+        try
+        {
+            kcpClient.Update();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
-});
+}).Start();
 
 while (true)
 {
@@ -29,12 +33,6 @@ while (true)
 
     if (!string.IsNullOrEmpty(readLine))
     {
-        client.Send(Encoding.Default.GetBytes(readLine), KcpChannel.Reliable);
-    }
-
-
-    if (readLine == "exit")
-    {
-        break;
+        kcpClient.SendData(Encoding.Default.GetBytes(readLine));
     }
 }

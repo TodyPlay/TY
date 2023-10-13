@@ -3,7 +3,7 @@ using TY.Worlds;
 
 namespace TY.App;
 
-public class Application
+public class Application : WorldManager
 {
     private static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
@@ -30,15 +30,13 @@ public class Application
     public int Delay => 1000 / Frame;
 
 
-    public WorldManager WorldManager { get; } = new();
-
-
     public void Run()
     {
+        Start();
         while (Enable)
         {
             Thread.Sleep(Delay);
-            WorldManager.Update();
+            Update();
         }
     }
 }

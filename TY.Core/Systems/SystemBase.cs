@@ -8,6 +8,14 @@ public abstract partial class SystemBase
 {
     private EntityManager? _entityManager;
 
+    private bool _enable;
+
+    public bool Enable
+    {
+        get => _enable;
+        set => _enable = value;
+    }
+
     public EntityManager EntityManager
     {
         get => _entityManager!;
@@ -21,12 +29,22 @@ public abstract partial class SystemBase
     protected TimeData TimeData => World.TimeData;
 
 
-    public void Update()
+    internal void Update()
     {
         OnUpdate();
     }
 
+    /// <summary>
+    /// 当成构造方法使用
+    /// </summary>
     public virtual void Awake()
+    {
+    }
+
+    /// <summary>
+    /// 世界启动时调用
+    /// </summary>
+    public virtual void Start()
     {
     }
 

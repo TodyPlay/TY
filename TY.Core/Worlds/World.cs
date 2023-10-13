@@ -18,6 +18,11 @@ public partial class World
     {
         return Name;
     }
+
+    public World(string name)
+    {
+        Name = name;
+    }
 }
 
 public partial class World
@@ -36,11 +41,28 @@ public partial class World
 
 public partial class World
 {
-    public void Update()
+    public void Start()
     {
         foreach (var system in _systems.OrderBy(v => v.Order))
         {
-            system.Update();
+            system.Start();
+            system.Enable = true;
+        }
+    }
+
+    public void Update()
+    {
+        foreach (var system in _systems.Where(v => v.Enable).OrderBy(v => v.Order))
+        {
+            try
+            {
+                system.Update();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e);
+                system.Enable = false;
+            }
         }
     }
 }

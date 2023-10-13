@@ -1,7 +1,9 @@
 ﻿using System.Numerics;
+using System.Text;
+using NLog;
 using TY.Demo.Components;
 using TY.Network.components;
-using TY.Network.kcp2k.highLevel;
+using TY.Network.kcp2k.highLevel2;
 using TY.Network.systems;
 using TY.Systems;
 
@@ -9,13 +11,14 @@ namespace TY.Demo.Systems;
 
 public class PlayerSystem : SystemBase
 {
+    private Logger _logger = LogManager.GetCurrentClassLogger();
     private NetworkSystem? _networkSystem;
 
     public override void Awake()
     {
         _networkSystem = World.CreateAndGetSystem<NetworkSystem>();
 
-        _networkSystem.OnConnected += CreateNewPlayer;
+        _networkSystem.OnConnection += CreateNewPlayer;
     }
 
     protected override void OnUpdate()
@@ -32,11 +35,18 @@ public class PlayerSystem : SystemBase
     }
 
 
-    private void CreateNewPlayer(int id, KcpServer kcpServer)
+    private void CreateNewPlayer(KcpConnection kcpConnection)
     {
         var entity = EntityManager.CreateEntity();
+
+        var networkComponent = new NetworkComponent() { KcpConnection = kcpConnection };
+
         EntityManager.AddComponent(entity,
-            new PlayerInfo { Id = id, Hp = 100, Name = id.ToString(), Position = new Vector3(0, 0, 0), Power = 100 });
-        EntityManager.AddComponent(entity, new NetworkComponent { ConnectionId = id, KcpServer = kcpServer });
+            new PlayerInfo { Id = 0, Hp = 100, Name = 0.ToString(), Position = new Vector3(0, 0, 0), Power = 100 });
+        networkComponent.KcpConnection!.OnData += bytes =>
+        {
+            _logger.Info("服务端收到数据：" + Encoding.Default.GetString(bytes));
+        };
+        EntityManager.AddComponent(entity, networkComponent);
     }
 }

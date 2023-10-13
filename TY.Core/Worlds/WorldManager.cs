@@ -1,9 +1,12 @@
-﻿using TY.Time;
+﻿using NLog;
+using TY.Time;
 
 namespace TY.Worlds;
 
 public partial class WorldManager
 {
+    private Logger _logger = LogManager.GetCurrentClassLogger();
+
     /// <summary>
     /// 所有世界
     /// </summary>
@@ -12,6 +15,11 @@ public partial class WorldManager
 
 public partial class WorldManager
 {
+    public World CreateWorld()
+    {
+        return CreateWorld(Guid.NewGuid().ToString());
+    }
+
     public World CreateWorld(string name)
     {
         if (name == null) throw new ArgumentNullException(nameof(name));
@@ -21,10 +29,7 @@ public partial class WorldManager
             return exists;
         }
 
-        var newWorld = new World
-        {
-            Name = name,
-        };
+        var newWorld = new World(name);
 
         newWorld.CreateAndGetSystem<TimeUpdateSystem>();
 
@@ -39,7 +44,17 @@ public partial class WorldManager
 
 public partial class WorldManager
 {
-    public void Update()
+    protected void Start()
+    {
+        _logger.Info("世界管理器启动");
+
+        foreach (var (_, world) in _worlds)
+        {
+            world.Start();
+        }
+    }
+
+    protected void Update()
     {
         foreach (var (_, world) in _worlds)
         {
