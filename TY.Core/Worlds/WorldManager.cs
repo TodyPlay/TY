@@ -3,18 +3,15 @@ using TY.Time;
 
 namespace TY.Worlds;
 
-public partial class WorldManager
+public abstract class WorldManager
 {
-    private Logger _logger = LogManager.GetCurrentClassLogger();
+    private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     /// <summary>
-    /// 所有世界
+    ///     所有世界
     /// </summary>
     private readonly Dictionary<string, World> _worlds = new();
-}
 
-public partial class WorldManager
-{
     public World CreateWorld()
     {
         return CreateWorld(Guid.NewGuid().ToString());
@@ -24,10 +21,7 @@ public partial class WorldManager
     {
         if (name == null) throw new ArgumentNullException(nameof(name));
 
-        if (_worlds.TryGetValue(name, out var exists))
-        {
-            return exists;
-        }
+        if (_worlds.TryGetValue(name, out var exists)) return exists;
 
         var newWorld = new World(name);
 
@@ -36,29 +30,19 @@ public partial class WorldManager
         return _worlds[name] = newWorld;
     }
 
-    public World? GetWorld(string name)
+    public bool GetWorld(string name, out World? world)
     {
-        return _worlds.TryGetValue(name, out var value) ? value : null;
+        return _worlds.TryGetValue(name, out world);
     }
-}
 
-public partial class WorldManager
-{
     protected void Start()
     {
         _logger.Info("世界管理器启动");
-
-        foreach (var (_, world) in _worlds)
-        {
-            world.Start();
-        }
+        foreach (var world in _worlds.Values) world.Start();
     }
 
     protected void Update()
     {
-        foreach (var (_, world) in _worlds)
-        {
-            world.Update();
-        }
+        foreach (var world in _worlds.Values) world.Update();
     }
 }

@@ -1,11 +1,14 @@
+using NLog;
+using NLog.Fluent;
 using TY.Entities;
-using TY.Time;
 using TY.Worlds;
 
 namespace TY.Systems;
 
-public abstract partial class SystemBase
+public abstract class SystemBase
 {
+    protected Logger Log = LogManager.GetCurrentClassLogger();
+
     private EntityManager? _entityManager;
 
     private bool _enable;
@@ -13,7 +16,11 @@ public abstract partial class SystemBase
     public bool Enable
     {
         get => _enable;
-        set => _enable = value;
+        set
+        {
+            _enable = value;
+            if (!value) Log.Warn($"System Disabled :{GetType()}");
+        }
     }
 
     public EntityManager EntityManager
@@ -24,18 +31,17 @@ public abstract partial class SystemBase
 
     protected World World => EntityManager.World;
 
-    protected TimeData TimeData => World.TimeData;
-
+    public virtual int Order => int.MaxValue;
 
     /// <summary>
-    /// 当成构造方法使用
+    ///     当成构造方法使用
     /// </summary>
     public virtual void Awake()
     {
     }
 
     /// <summary>
-    /// 世界启动时调用
+    ///     世界启动时调用
     /// </summary>
     public virtual void Start()
     {
@@ -44,12 +50,4 @@ public abstract partial class SystemBase
     public virtual void Update()
     {
     }
-}
-
-/// <summary>
-/// 排序
-/// </summary>
-public partial class SystemBase
-{
-    public virtual int Order => int.MaxValue;
 }

@@ -25,7 +25,6 @@ namespace TY.Entities;
     }
 #>
 <#
-
     string Typeof(int count)
     {
         var builder = new StringBuilder();

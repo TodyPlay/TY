@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Newtonsoft.Json;
+﻿using System.Text.Json;
 using TY.Components;
 using TY.Network.kcp2k.highLevel2;
 
@@ -12,8 +11,10 @@ public class NetworkComponent : IComponentData
 {
     public KcpConnection? KcpConnection;
 
+    private JsonSerializerOptions _options = new() { IncludeFields = true };
+
     public void SendData(object data)
     {
-        KcpConnection!.SendData(Encoding.Default.GetBytes(JsonConvert.SerializeObject(data)));
+        KcpConnection!.SendData(JsonSerializer.SerializeToUtf8Bytes(data, _options));
     }
 }

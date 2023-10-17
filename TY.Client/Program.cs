@@ -1,6 +1,5 @@
-﻿using System.Text;
-using System.Threading.Channels;
-using NLog;
+﻿using NLog;
+using System.Text;
 using TY.Network.kcp2k.highLevel2;
 
 var logger = LogManager.GetCurrentClassLogger();
@@ -21,7 +20,7 @@ new Thread(() =>
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            logger.Debug(e);
             throw;
         }
     }

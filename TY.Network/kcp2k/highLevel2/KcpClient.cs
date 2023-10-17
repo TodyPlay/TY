@@ -103,6 +103,7 @@ public class KcpClient
         }
         catch (SocketException e)
         {
+            _logger.Debug(e);
             Disconnect();
         }
 
@@ -151,5 +152,6 @@ public class KcpClient
     {
         _connected = false;
         _closed = true;
+        OnClosed?.Invoke();
     }
 }

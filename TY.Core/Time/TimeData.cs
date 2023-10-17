@@ -1,6 +1,8 @@
+using TY.Components;
+
 namespace TY.Time;
 
-public sealed class TimeData
+public sealed class TimeData : ISharedComponentData
 {
     public double Time { get; internal set; }
 

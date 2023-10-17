@@ -27,19 +27,23 @@ public partial class EntityManager
         return entity;
     }
 
+    public void AddComponent<T>(Entity entity) where T : IComponentData, new()
+    {
+        AddComponent(entity, new T());
+    }
 
-    public void AddComponent<T>(Entity entity, T component) where T : class, IComponentData
+    public void AddComponent(Entity entity, IComponentData component)
     {
         if (_entities.TryGetValue(entity, out var components))
         {
-            if (!components.ContainsKey(typeof(T)))
+            if (!components.ContainsKey(component.GetType()))
             {
-                components[typeof(T)] = component;
+                components[component.GetType()] = component;
             }
         }
     }
 
-    public void AddComponent<T>(Entity entity, params T[] components) where T : class, IComponentData
+    public void AddComponent(Entity entity, params IComponentData[] components)
     {
         foreach (var component in components)
         {
@@ -49,8 +53,7 @@ public partial class EntityManager
 
     public IEnumerable<IComponentData> FindComponents(Type type)
     {
-        return _entities.Values.Where(dics => dics.ContainsKey(type))
-            .Select(dics => dics.Where(pair => pair.Key == type).Select(pair => pair.Value).First());
+        return FindComponents(new[] { type }).Select(v => v[0]);
     }
 
     public IEnumerable<IComponentData[]> FindComponents(params Type[] types)

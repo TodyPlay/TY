@@ -1,20 +1,22 @@
-﻿using NLog;
+﻿using System.Linq;
+using NLog;
 using TY.Systems;
+using TY.Time;
 
 namespace TY.Demo.Systems;
 
 public class ShowTimeSystem : SystemBase
 {
-    private Logger _logger = LogManager.GetCurrentClassLogger();
-
-    private int _counter;
+    private double _counter;
+    private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
     public override void Update()
     {
-        if (++_counter > 60)
+        var timeData = EntityManager.Query<TimeData>().First();
+        if ((_counter += timeData.DeltaTime) >= 1000)
         {
-            _counter -= 60;
-            _logger.Debug(TimeData);
+            _counter -= 1000;
+            _logger.Debug(timeData);
         }
     }
 }
