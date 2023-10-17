@@ -1,5 +1,4 @@
 using NLog;
-using NLog.Fluent;
 using TY.Entities;
 using TY.Worlds;
 
@@ -7,11 +6,11 @@ namespace TY.Systems;
 
 public abstract class SystemBase
 {
-    protected Logger Log = LogManager.GetCurrentClassLogger();
+    private bool _enable;
 
     private EntityManager? _entityManager;
-
-    private bool _enable;
+    private Logger? _logger;
+    protected Logger Log => _logger ??= LogManager.GetLogger(GetType().FullName);
 
     public bool Enable
     {

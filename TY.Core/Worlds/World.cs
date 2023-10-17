@@ -44,7 +44,7 @@ public class World
             catch (Exception e)
             {
                 system.Enable = false;
-                _logger.Error(e);
+                _logger.Error(e,e.Message);
             }
     }
 

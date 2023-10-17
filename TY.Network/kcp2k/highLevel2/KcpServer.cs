@@ -51,7 +51,7 @@ public class KcpServer
             ProcessMessage(_buffer!, size, ep);
         }
 
-        foreach (var (_, connection) in _connections!)
+        foreach (var connection in _connections!.Values)
         {
             connection.Update((uint)_stopwatch!.ElapsedMilliseconds);
         }
@@ -62,9 +62,14 @@ public class KcpServer
 
     private void ProcessMessage(byte[] data, int size, EndPoint ep)
     {
-        if (!_connections!.TryGetValue(ep, out var connection))
+        KcpConnection connection;
+
+        if (_connections!.ContainsKey(ep))
         {
-            _logger.Debug("新的连接");
+            connection = _connections[ep];
+        }
+        else
+        {
             connection = _connections[ep] = new KcpConnection(ep, _socket!);
             OnConnection?.Invoke(connection);
         }
