@@ -14,7 +14,6 @@ public class ShowTimeSystem : SystemBase
         if ((_counter += timeData.DeltaTime) >= 1000)
         {
             _counter -= 1000;
-            Log.Debug(timeData);
         }
     }
 }

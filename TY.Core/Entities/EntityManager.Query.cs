@@ -1,40 +1,69 @@
+using TY.Components;
+
 namespace TY.Entities;
 
-public partial class EntityManager
+public partial struct EntityManager
 {
     public IEnumerable<T1> Query<T1>()
+        where T1 : IQueryTypeParameter
     {
-        return FindComponents(typeof(T1)).Select(v => (T1) v);
+        throw new NotImplementedException();
     }
 
     public IEnumerable<(T1, T2)> Query<T1, T2>()
+        where T1 : IQueryTypeParameter
+        where T2 : IQueryTypeParameter
     {
-        return FindComponents(typeof(T1), typeof(T2)).Select(v => ((T1) v[0], (T2) v[1]));
+        throw new NotImplementedException();
     }
 
     public IEnumerable<(T1, T2, T3)> Query<T1, T2, T3>()
+        where T1 : IQueryTypeParameter
+        where T2 : IQueryTypeParameter
+        where T3 : IQueryTypeParameter
     {
-        return FindComponents(typeof(T1), typeof(T2), typeof(T3)).Select(v => ((T1) v[0], (T2) v[1], (T3) v[2]));
+        throw new NotImplementedException();
     }
 
     public IEnumerable<(T1, T2, T3, T4)> Query<T1, T2, T3, T4>()
+        where T1 : IQueryTypeParameter
+        where T2 : IQueryTypeParameter
+        where T3 : IQueryTypeParameter
+        where T4 : IQueryTypeParameter
     {
-        return FindComponents(typeof(T1), typeof(T2), typeof(T3), typeof(T4)).Select(v => ((T1) v[0], (T2) v[1], (T3) v[2], (T4) v[3]));
+        throw new NotImplementedException();
     }
 
     public IEnumerable<(T1, T2, T3, T4, T5)> Query<T1, T2, T3, T4, T5>()
+        where T1 : IQueryTypeParameter
+        where T2 : IQueryTypeParameter
+        where T3 : IQueryTypeParameter
+        where T4 : IQueryTypeParameter
+        where T5 : IQueryTypeParameter
     {
-        return FindComponents(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)).Select(v => ((T1) v[0], (T2) v[1], (T3) v[2], (T4) v[3], (T5) v[4]));
+        throw new NotImplementedException();
     }
 
     public IEnumerable<(T1, T2, T3, T4, T5, T6)> Query<T1, T2, T3, T4, T5, T6>()
+        where T1 : IQueryTypeParameter
+        where T2 : IQueryTypeParameter
+        where T3 : IQueryTypeParameter
+        where T4 : IQueryTypeParameter
+        where T5 : IQueryTypeParameter
+        where T6 : IQueryTypeParameter
     {
-        return FindComponents(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)).Select(v => ((T1) v[0], (T2) v[1], (T3) v[2], (T4) v[3], (T5) v[4], (T6) v[5]));
+        throw new NotImplementedException();
     }
 
     public IEnumerable<(T1, T2, T3, T4, T5, T6, T7)> Query<T1, T2, T3, T4, T5, T6, T7>()
+        where T1 : IQueryTypeParameter
+        where T2 : IQueryTypeParameter
+        where T3 : IQueryTypeParameter
+        where T4 : IQueryTypeParameter
+        where T5 : IQueryTypeParameter
+        where T6 : IQueryTypeParameter
+        where T7 : IQueryTypeParameter
     {
-        return FindComponents(typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)).Select(v => ((T1) v[0], (T2) v[1], (T3) v[2], (T4) v[3], (T5) v[4], (T6) v[5], (T7) v[6]));
+        throw new NotImplementedException();
     }
-
 }

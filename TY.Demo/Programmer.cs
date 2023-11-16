@@ -1,12 +1,8 @@
-using TY.App;
-using TY.Demo.Systems;
-using TY.Network.systems;
+using System;
+using TY.Collections;
 
-var application = new Application();
+unsafe
+{
 
-var world = application.CreateWorld();
-world.CreateAndGetSystem<NetworkSystem>();
-world.CreateAndGetSystem<PlayerSystem>();
-world.CreateAndGetSystem<ShowTimeSystem>();
-
-application.Run();
+    Console.WriteLine(sizeof(FixedString64));
+}

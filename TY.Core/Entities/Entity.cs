@@ -3,16 +3,9 @@
 /// <summary>
 ///     实体实例
 /// </summary>
-public class Entity
+public struct Entity
 {
-    internal Entity()
-    {
-    }
+    public int Index;
 
-    public uint Index { get; init; }
-
-    public override string ToString()
-    {
-        return $"{nameof(Index)}: {Index}";
-    }
+    public int Version;
 }

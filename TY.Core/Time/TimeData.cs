@@ -2,11 +2,11 @@ using TY.Components;
 
 namespace TY.Time;
 
-public sealed class TimeData : ISharedComponentData
+public struct TimeData : ISharedComponentData
 {
-    public double Time { get; internal set; }
+    public double Time;
 
-    public double DeltaTime { get; internal set; }
+    public double DeltaTime;
 
     public override string ToString()
     {

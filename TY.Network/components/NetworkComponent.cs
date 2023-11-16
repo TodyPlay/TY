@@ -7,11 +7,16 @@ namespace TY.Network.components;
 /// <summary>
 /// 标识一个网络客户端
 /// </summary>
-public class NetworkComponent : IComponentData
+public struct NetworkComponent : IComponentData
 {
     public KcpConnection? KcpConnection;
 
     private JsonSerializerOptions _options = new() { IncludeFields = true };
+
+    public NetworkComponent()
+    {
+        KcpConnection = null;
+    }
 
     public void SendData(object data)
     {

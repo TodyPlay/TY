@@ -1,64 +1,38 @@
+﻿using TY.Collections;
 using TY.Components;
-using TY.Worlds;
+using TY.Unmanaged;
 
 namespace TY.Entities;
 
-public partial class EntityManager
+public unsafe partial struct EntityManager
 {
-    private uint _currentId;
-
-    private uint NextEntityId => ++_currentId;
-
-    private readonly Entities _entities = new();
-
-    public World World { get; }
-
-    public EntityManager(World world)
-    {
-        World = world;
-    }
+    public EntityDataAccess* entityDataAccess;
 
     public Entity CreateEntity()
     {
-        var entity = new Entity { Index = NextEntityId };
-
-        _entities[entity] = new Components();
-
-        return entity;
+        throw new NotImplementedException();
     }
 
-    public void AddComponent<T>(Entity entity) where T : IComponentData, new()
+    public Entity CreateEntity(params Type[] types)
     {
-        AddComponent(entity, new T());
+        throw new NotImplementedException();
     }
 
-    public void AddComponent(Entity entity, IComponentData component)
+    public bool AddComponent<T>(Entity entity) where T : struct, IComponentData
     {
-        if (_entities.TryGetValue(entity, out var components))
-        {
-            if (!components.ContainsKey(component.GetType()))
-            {
-                components[component.GetType()] = component;
-            }
-        }
+        throw new NotImplementedException();
     }
 
-    public void AddComponent(Entity entity, params IComponentData[] components)
+    public bool AddComponent<T>(Entity entity, T componentData) where T : struct, IComponentData
     {
-        foreach (var component in components)
-        {
-            AddComponent(entity, component);
-        }
+        throw new NotImplementedException();
     }
+}
 
-    public IEnumerable<IComponentData> FindComponents(Type type)
-    {
-        return FindComponents(new[] { type }).Select(v => v[0]);
-    }
-
-    public IEnumerable<IComponentData[]> FindComponents(params Type[] types)
-    {
-        return _entities.Values.Where(dics => types.All(type => dics.Keys.Contains(type)))
-            .Select(dics => dics.Where(pair => types.Contains(pair.Key)).Select(pair => pair.Value).ToArray());
-    }
+/// <summary>
+/// 实体数据访问
+/// </summary>
+public struct EntityDataAccess
+{
+    public UnsafeList<Archetype> archetypes;
 }

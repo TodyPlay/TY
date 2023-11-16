@@ -1,5 +1,7 @@
 <#@ template language="C#" #>
 <#@ import namespace="System.Text" #>
+using TY.Components;
+
 namespace TY.Entities;
 
 <#
@@ -61,17 +63,36 @@ namespace TY.Entities;
         return builder.ToString();
     }
 #>
-public partial class EntityManager
+public partial struct EntityManager
 {
 <#
+    string Wheres(int count)
+    {
+        var sb = new StringBuilder();
+        for (int i = 1; i <= count; i++)
+        {
+            sb.Append("        ").Append($"where T{i} : IQueryTypeParameter");
+
+            if (i != count)
+            {
+                sb.AppendLine();
+            }
+        }
+
+        return sb.ToString();
+    }
+
     for (var i = start; i < end; i++)
     {
-        WriteLine(i == 1
-            ? $@"    public IEnumerable<{Generics(i)}> Query<{Generics(i)}>()"
-            : $@"    public IEnumerable<({Generics(i)})> Query<{Generics(i)}>()");
-
+        Write(i == 1
+            ? $@"    public IEnumerable<{Generics(i)}> Query<{Generics(i)}>()
+{Wheres(i)}
+"
+            : $@"    public IEnumerable<({Generics(i)})> Query<{Generics(i)}>()
+{Wheres(i)}
+");
         WriteLine(@$"    {{
-        return FindComponents({Typeof(i)}).Select({Select(i)});
+        throw new NotImplementedException();
     }}
 ");
     }

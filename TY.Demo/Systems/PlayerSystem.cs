@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Text;
 using NLog;
+using TY.Components;
 using TY.Demo.Components;
 using TY.Network.components;
 using TY.Network.kcp2k.highLevel2;
@@ -23,9 +24,9 @@ public class PlayerSystem : SystemBase
 
     public override void Update()
     {
-        foreach (var player in EntityManager.Query<PlayerInfo>())
+        foreach (var player in EntityManager.Query<RefStruct<PlayerInfo>>())
         {
-            player.Position += Vector3.One;
+            player.Value.Position += Vector3.One;
         }
 
         foreach (var (player, networkComponent) in EntityManager.Query<PlayerInfo, NetworkComponent>())

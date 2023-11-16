@@ -1,24 +1,41 @@
 using NLog;
 using TY.Entities;
 using TY.Systems;
+using TY.Unmanaged;
 
 namespace TY.Worlds;
 
 public class World
 {
     private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-    private readonly Dictionary<Type, SystemBase> _systemLookup = new();
 
+    private readonly Dictionary<Type, SystemBase> _systemLookup = new();
     private readonly List<SystemBase> _systems = new();
-    private EntityManager? _entityManager;
+
+    private WordUnmanaged _wordUnmanaged;
 
     public World(string name)
     {
         Name = name;
+        Init();
+    }
+
+    private void Init()
+    {
+        var entityManager = new EntityManager()
+        {
+            entityDataAccess = default,
+        };
+
+        _wordUnmanaged = new WordUnmanaged()
+        {
+            entityManager = entityManager,
+            World = this,
+            unmanagedSystems = default,
+        };
     }
 
     internal string Name { get; init; }
-    private EntityManager EntityManager => _entityManager ??= new EntityManager(this);
 
     public override string ToString()
     {
@@ -44,7 +61,7 @@ public class World
             catch (Exception e)
             {
                 system.Enable = false;
-                _logger.Error(e,e.Message);
+                _logger.Error(e, e.Message);
             }
     }
 
@@ -57,7 +74,7 @@ public class World
     {
         if (_systemLookup.TryGetValue(typeof(T), out var exists)) return (T)exists;
 
-        system.EntityManager = EntityManager;
+        system.WordUnmanaged = _wordUnmanaged;
         system.Awake();
 
         _systems.Add(system);
