@@ -1,8 +1,3 @@
 using System;
-using TY.Collections;
 
-unsafe
-{
-
-    Console.WriteLine(sizeof(FixedString64));
-}
+Console.WriteLine("{0:d16}",123546578);

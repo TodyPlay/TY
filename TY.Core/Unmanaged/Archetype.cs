@@ -10,10 +10,19 @@ public unsafe struct Archetype
     /// <summary>
     /// 类型
     /// </summary>
-    public UnsafeList<TypeIndex> types;
+    public ComponentTypeInArchetype* types;
+
+    public int typesCount;
 
     /// <summary>
     /// chunk指针数组
     /// </summary>
-    public UnsafePtrList<Chunk> chunkData;
+    public UnsafeList<IntPtr> chunkData;
 }
+
+// public unsafe struct EntityArchetype
+// {
+//     public Archetype* Archetype;
+//
+//     public bool Valid => Archetype != null;
+// }

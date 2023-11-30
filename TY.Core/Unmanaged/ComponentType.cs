@@ -1,10 +1,12 @@
-﻿namespace TY.Unmanaged;
+﻿using TY.Collections;
+
+namespace TY.Unmanaged;
 
 public class TypeManager
 {
-    private static List<Type> _types = new List<Type>();
+    private List<Type> _types = new List<Type>();
 
-    public static TypeIndex TypeIndex(Type type)
+    public TypeIndex TypeIndex(Type type)
     {
         var index = _types.IndexOf(type);
 
@@ -15,6 +17,11 @@ public class TypeManager
         }
 
         return index;
+    }
+
+    public Type GetType(int index)
+    {
+        return _types[index];
     }
 }
 
@@ -48,4 +55,22 @@ public struct TypeIndex
 
 public struct ComponentType
 {
+    public TypeIndex typeIndex;
+    
+    public static implicit operator ComponentType(Type type) =>
+        new() { typeIndex = SharedInstance<TypeManager>.Instance.TypeIndex(type) };
+
+    public static implicit operator Type(ComponentType ct) =>
+        SharedInstance<TypeManager>.Instance.GetType(ct.typeIndex.Index);
+
+    public static implicit operator int(ComponentType ct) => ct.typeIndex.buffer;
+
+    public static implicit operator ComponentType(int value) => new() { typeIndex = value };
+}
+
+public struct ComponentTypeInArchetype
+{
+
+    public TypeIndex TypeIndex;
+
 }

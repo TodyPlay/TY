@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using TY.Memory;
 
 namespace TY.Unmanaged;
 
@@ -21,9 +22,9 @@ public static class ChunkPool
 
     public static unsafe void BackChunk(Chunk* chunk)
     {
-        CryptographicOperations.ZeroMemory(new Span<byte>(chunk, SIZE));
+        var ptr = Unsafe.AllocZeroed(SIZE);
 
-        _chunks.Enqueue((IntPtr)chunk);
+        _chunks.Enqueue((IntPtr)ptr);
     }
 
     private static unsafe Chunk* NewChunk()
