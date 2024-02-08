@@ -6,11 +6,11 @@
         <Nullable>enable</Nullable>
         <RootNamespace>TY</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        
+
         <T4Execution>D:\下载\TextTransformCore\TextTransformCore.exe</T4Execution>
     </PropertyGroup>
 
-    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="Exists($(T4Execution))">
         <Exec Command="$(T4Execution) $(ProjectDir)Entities\EntityManager.Query.tt"/>
     </Target>
 
