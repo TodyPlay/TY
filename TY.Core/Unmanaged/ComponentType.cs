@@ -1,10 +1,16 @@
 ﻿using TY.Collections;
+using TY.Components;
 
 namespace TY.Unmanaged;
 
 public class TypeManager
 {
-    private List<Type> _types = new List<Type>();
+    private List<Type> _types = new();
+
+    public TypeIndex TypeIndex<T>()
+    {
+        return TypeIndex(typeof(T));
+    }
 
     public TypeIndex TypeIndex(Type type)
     {
@@ -13,19 +19,24 @@ public class TypeManager
         if (index == -1)
         {
             _types.Add(type);
-            return _types.Count - 1;
+            return new TypeIndex() { buffer = _types.Count - 1 };
         }
 
-        return index;
+        return new TypeIndex() { buffer = index };
     }
 
     public Type GetType(int index)
     {
         return _types[index];
     }
+
+    public Type GetType(TypeIndex typeIndex)
+    {
+        return _types[typeIndex.Index];
+    }
 }
 
-public struct TypeIndex
+public struct TypeIndex : IEquatable<TypeIndex>
 {
     /// <summary>
     /// 数据buffer 000000000_00000000_00001111_11111111
@@ -48,29 +59,44 @@ public struct TypeIndex
     /// </summary>
     private const int INDEX_MASK = INDEX_MAX - 1;
 
-    public static implicit operator int(TypeIndex ti) => ti.buffer;
 
-    public static implicit operator TypeIndex(int value) => new() { buffer = value };
+    public bool Equals(TypeIndex other)
+    {
+        return buffer == other.buffer;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is TypeIndex other && Equals(other);
+    }
+
+    public override int GetHashCode()
+    {
+        return buffer;
+    }
+
+    public static bool operator ==(TypeIndex a, TypeIndex b)
+    {
+        return a.buffer == b.buffer;
+    }
+
+    public static bool operator !=(TypeIndex a, TypeIndex b)
+    {
+        return !(a == b);
+    }
 }
 
 public struct ComponentType
 {
     public TypeIndex typeIndex;
-    
-    public static implicit operator ComponentType(Type type) =>
-        new() { typeIndex = SharedInstance<TypeManager>.Instance.TypeIndex(type) };
 
-    public static implicit operator Type(ComponentType ct) =>
-        SharedInstance<TypeManager>.Instance.GetType(ct.typeIndex.Index);
-
-    public static implicit operator int(ComponentType ct) => ct.typeIndex.buffer;
-
-    public static implicit operator ComponentType(int value) => new() { typeIndex = value };
+    public static ComponentType ReadWrite<T>() where T : unmanaged, IComponentData
+    {
+        return new ComponentType() { typeIndex = SharedInstance<TypeManager>.Instance.TypeIndex<T>() };
+    }
 }
 
 public struct ComponentTypeInArchetype
 {
-
     public TypeIndex TypeIndex;
-
 }

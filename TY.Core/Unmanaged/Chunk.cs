@@ -1,16 +1,16 @@
 ﻿using System.Runtime.InteropServices;
-using System.Security.Cryptography;
+using TY.Entities;
 using TY.Memory;
 
 namespace TY.Unmanaged;
 
-public static class ChunkPool
+public class ChunkPool
 {
-    private static Queue<nint> _chunks = new();
+    private Queue<nint> _chunks = new();
 
     private const int SIZE = 16 * 1024;
 
-    public static unsafe Chunk* GetChunk()
+    public unsafe Chunk* GetChunk()
     {
         if (_chunks.Count > 0)
         {
@@ -20,20 +20,15 @@ public static class ChunkPool
         return NewChunk();
     }
 
-    public static unsafe void BackChunk(Chunk* chunk)
+    public unsafe void BackChunk(Chunk* chunk)
     {
-        var ptr = Unsafe.AllocZeroed(SIZE);
-
-        _chunks.Enqueue((IntPtr)ptr);
+        Memory.MemoryUtility.CleanMemory(chunk, SIZE);
+        _chunks.Enqueue((IntPtr)chunk);
     }
 
-    private static unsafe Chunk* NewChunk()
+    private unsafe Chunk* NewChunk()
     {
-        var chunk = Marshal.AllocHGlobal(SIZE);
-
-        CryptographicOperations.ZeroMemory(new Span<byte>(chunk.ToPointer(), SIZE));
-
-        return (Chunk*)chunk;
+        return (Chunk*)Memory.MemoryUtility.AllocZeroed(SIZE);
     }
 }
 
@@ -88,4 +83,35 @@ public unsafe struct Chunk
     [FieldOffset(9)] public Archetype* Archetype;
 
     [FieldOffset(HEADER_SIZE)] public fixed byte Buffer[BUFFER_SIZE];
+
+
+    public void NextEntity(Entity* entity, EntityInChunk* entityInChunk, int index)
+    {
+        fixed (byte* ptr = Buffer)
+        {
+            var data = (Entity*)ptr + Size;
+            data->Index = index;
+            data->Version = 0;
+            *entity = *data;
+        }
+
+        fixed (Chunk* ptr = &this)
+        {
+            *entityInChunk = new EntityInChunk() { Chunk = ptr, IndexInChunk = Size };
+        }
+
+        Size++;
+    }
+
+    public static int CalculateChunkCapacity(int* sizeOfs, int count)
+    {
+        var size = 0;
+
+        for (var i = 0; i < count; i++)
+        {
+            size += sizeOfs[i];
+        }
+
+        return BUFFER_SIZE / size;
+    }
 }

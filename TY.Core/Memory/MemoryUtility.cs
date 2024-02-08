@@ -2,8 +2,26 @@
 
 namespace TY.Memory;
 
-public class Unsafe
+public enum AllocType
 {
+    /**
+     * 全局内存
+     */
+    GLOBAL,
+
+    /**
+     * 每帧后释放
+     */
+    FRAME,
+}
+
+public class MemoryUtility
+{
+    public static unsafe T* AllocZeroed<T>(int count = 1) where T : unmanaged
+    {
+        return (T*)AllocZeroed((uint)(sizeof(T) * count));
+    }
+
     public static unsafe void* AllocZeroed(uint size)
     {
         return NativeMemory.AllocZeroed(size);
@@ -24,11 +42,21 @@ public class Unsafe
         NativeMemory.Copy(source, destination, byteCount);
     }
 
+    public static unsafe void Copy(void* source, void* destination, int byteCount)
+    {
+        Copy(source, destination, (uint)byteCount);
+    }
+
     public static unsafe int MemoryCompare(void* ptr1, void* ptr2, int byteCount)
     {
         var s1 = new Span<byte>(ptr1, byteCount);
         var s2 = new Span<byte>(ptr2, byteCount);
 
         return s1.SequenceCompareTo(s2);
+    }
+
+    public static unsafe void CleanMemory(void* chunk, uint size)
+    {
+        NativeMemory.Clear(chunk, size);
     }
 }

@@ -24,7 +24,7 @@ public class PlayerSystem : SystemBase
 
     public override void Update()
     {
-        foreach (var player in EntityManager.Query<RefStruct<PlayerInfo>>())
+        foreach (var player in EntityManager.Query<Ref<PlayerInfo>>())
         {
             player.Value.Position += Vector3.One;
         }

@@ -1,8 +1,8 @@
-﻿using TY.Collections;
+﻿using System.Runtime.InteropServices;
+using TY.Collections;
 using TY.Components;
 using TY.Memory;
 using TY.Unmanaged;
-using ComponentType = TY.Unmanaged.ComponentType;
 
 namespace TY.Entities;
 
@@ -15,9 +15,9 @@ public unsafe partial struct EntityManager
         return entityDataAccess->CreateEntity();
     }
 
-    public Entity CreateEntity(params Type[] types)
+    public Entity CreateEntity(params ComponentType[] types)
     {
-        throw new NotImplementedException();
+        return entityDataAccess->CreateEntity(types);
     }
 
     public bool AddComponent<T>(Entity entity) where T : struct, IComponentData
@@ -28,6 +28,10 @@ public unsafe partial struct EntityManager
     public bool AddComponent<T>(Entity entity, T componentData) where T : struct, IComponentData
     {
         throw new NotImplementedException();
+    }
+
+    public void Query(ComponentType[] types)
+    {
     }
 }
 
@@ -48,11 +52,27 @@ public unsafe struct EntityDataAccess
     /// <summary>
     /// chunk 信息数组，下标为entity的index
     /// </summary>
-    public EntityChunkInfo* chunkInfo;
+    public UnsafeList<EntityInChunk> chunkInfo;
 
-    public Entity CreateEntity()
+    public EntityQuery Query(ComponentType[] componentTypes)
     {
-        throw new NotImplementedException();
+        //TODO 使用帧内存避免手动释放
+        var matchingTypes = MemoryUtility.AllocZeroed<UnsafePtrList<Archetype>>();
+
+        fixed (ComponentType* types = componentTypes)
+        {
+            foreach (var archetype in archetypes)
+            {
+                {
+                    if (archetype->IsContainAllTypes(types, componentTypes.Length))
+                    {
+                        matchingTypes->Add(archetype);
+                    }
+                }
+            }
+        }
+
+        return new EntityQuery() { matchingTypes = matchingTypes };
     }
 
     public Archetype* GetOrCreateArchetype(ComponentType* types, int count)
@@ -63,19 +83,91 @@ public unsafe struct EntityDataAccess
 
         foreach (var archetype in archetypes)
         {
-            if (archetype.typesCount == count && Unsafe.MemoryCompare(archetype.types, types, count) == 0)
+            if (archetype->typesCount == count && MemoryUtility.MemoryCompare(archetype->types, types, count) == 0)
             {
-                // todo return archetype;
+                return archetype;
             }
         }
 
-        // todo  create archetype
+        return CreateArchetype(sortedComponents, count + 1);
+    }
 
-        return null;
+    public Entity CreateEntity()
+    {
+        return CreateEntity(GetOrCreateArchetype(default, 0));
+    }
+
+    public Entity CreateEntity(ComponentType[] componentTypes)
+    {
+        fixed (ComponentType* types = componentTypes)
+        {
+            return CreateEntity(GetOrCreateArchetype(types, componentTypes.Length));
+        }
+    }
+
+    public Entity CreateEntity(Archetype* archetype)
+    {
+        //获取有空格位置的Chunk
+        var chunk = archetype->GetExistingChunkWithEmptySlots();
+
+        //在chunk内开辟空间
+        Entity entity;
+        EntityInChunk entityInChunk;
+
+        chunk->NextEntity(&entity, &entityInChunk, chunkInfo.Length);
+        chunkInfo.Add(entityInChunk);
+
+        return entity;
+    }
+
+
+    private Archetype* CreateArchetype(ComponentTypeInArchetype* sortedComponents, int count)
+    {
+        var byteSize = sizeof(ComponentTypeInArchetype) * count;
+        var allocSortedComponents = (ComponentTypeInArchetype*)Memory.MemoryUtility.AllocZeroed((uint)byteSize);
+
+        MemoryUtility.Copy(sortedComponents, allocSortedComponents, (uint)byteSize);
+
+        var archetype = (Archetype*)MemoryUtility.AllocZeroed((uint)sizeof(Archetype));
+
+        var typesSizes = (int*)MemoryUtility.AllocZeroed(sizeof(int));
+        var typesOffsets = (int*)MemoryUtility.AllocZeroed(sizeof(int));
+
+        archetype->types = allocSortedComponents;
+        archetype->typesCount = count;
+        archetype->chunkData.Add(SharedInstance<ChunkPool>.Instance.GetChunk());
+
+        //类型大小存储
+        archetype->typesSizes = typesSizes;
+        for (var i = 0; i < count; i++)
+        {
+            var type = SharedInstance<TypeManager>.Instance.GetType(sortedComponents[i].TypeIndex);
+            archetype->typesSizes[i] = Marshal.SizeOf(type);
+        }
+
+        //实体容纳个数
+        archetype->capacityInChunk = Chunk.CalculateChunkCapacity(archetype->typesSizes, count);
+
+        //类型偏移
+        archetype->typesOffsets = typesOffsets;
+        var usedBytes = 0;
+        for (var c = 0; c < count; c++)
+        {
+            archetype->typesOffsets[c] = usedBytes;
+            usedBytes += archetype->typesSizes[c] * archetype->capacityInChunk;
+        }
+
+        return archetype;
     }
 
 
     private void SortComponents(ComponentType* types, int count, ComponentTypeInArchetype* sorted)
     {
+        sorted[0] = new ComponentTypeInArchetype
+            { TypeIndex = SharedInstance<TypeManager>.Instance.TypeIndex(typeof(Entity)) };
+
+        new Span<ComponentType>(types, count).Sort();
+
+        Memory.MemoryUtility.Copy(types, sorted + 1, sizeof(ComponentType) * count);
     }
 }

@@ -1,11 +1,10 @@
-﻿using System.Collections;
-using TY.Memory;
+﻿using TY.Memory;
 
 namespace TY.Collections;
 
 #region UnsafePtrList
 
-public unsafe struct UnsafePtrList<T> : IEnumerable<IntPtr> where T : unmanaged
+public unsafe struct UnsafePtrList<T> : IDisposable where T : unmanaged
 {
     private T** _ptr;
 
@@ -48,15 +47,15 @@ public unsafe struct UnsafePtrList<T> : IEnumerable<IntPtr> where T : unmanaged
 
         if (newCapacity > 0)
         {
-            newPtr = (T**)Unsafe.AllocZeroed((uint)(newCapacity * size));
+            newPtr = (T**)MemoryUtility.AllocZeroed((uint)(newCapacity * size));
             if (_ptr != null && _capacity > 0)
             {
                 var sizeToCopy = Math.Min(_capacity, newCapacity) * size;
-                Unsafe.Copy(_ptr, newPtr, (uint)sizeToCopy);
+                MemoryUtility.Copy(_ptr, newPtr, (uint)sizeToCopy);
             }
         }
 
-        Unsafe.Free(_ptr);
+        MemoryUtility.Free(_ptr);
 
         _ptr = newPtr;
         _capacity = newCapacity;
@@ -136,7 +135,7 @@ public unsafe struct UnsafePtrList<T> : IEnumerable<IntPtr> where T : unmanaged
         var sizeOf = sizeof(T);
         void* dst = (byte*)_ptr + idx * sizeOf;
 
-        Unsafe.Copy(ptr, dst, (uint)(count + sizeOf));
+        Memory.MemoryUtility.Copy(ptr, dst, (uint)(count + sizeOf));
     }
 
     public void AddRange(UnsafePtrList<T> list)
@@ -153,7 +152,7 @@ public unsafe struct UnsafePtrList<T> : IEnumerable<IntPtr> where T : unmanaged
         var src = dst + 1;
         _length--;
 
-        Unsafe.Copy(src, dst, (uint)(_length - index));
+        Memory.MemoryUtility.Copy(src, dst, (uint)(_length - index));
     }
 
     public readonly bool IsEmpty => !IsCreated || _length == 0;
@@ -164,7 +163,7 @@ public unsafe struct UnsafePtrList<T> : IEnumerable<IntPtr> where T : unmanaged
     {
         if (!IsCreated) return;
 
-        Unsafe.Free(_ptr);
+        MemoryUtility.Free(_ptr);
         _ptr = default;
         _length = default;
         _capacity = default;
@@ -180,18 +179,7 @@ public unsafe struct UnsafePtrList<T> : IEnumerable<IntPtr> where T : unmanaged
         return new Enumerator { m_Ptr = _ptr, m_Length = Length, m_Index = -1 };
     }
 
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
-
-    IEnumerator<IntPtr> IEnumerable<IntPtr>.GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
-
-    public struct Enumerator : IEnumerator<IntPtr>
+    public struct Enumerator
     {
         internal T** m_Ptr;
         internal int m_Length;
@@ -211,9 +199,7 @@ public unsafe struct UnsafePtrList<T> : IEnumerable<IntPtr> where T : unmanaged
             m_Index = -1;
         }
 
-        public IntPtr Current => (IntPtr)m_Ptr[m_Index];
-
-        object IEnumerator.Current => Current;
+        public T* Current => m_Ptr[m_Index];
     }
 }
 
@@ -221,7 +207,7 @@ public unsafe struct UnsafePtrList<T> : IEnumerable<IntPtr> where T : unmanaged
 
 #region UnsafeList
 
-public unsafe struct UnsafeList<T> : IDisposable, INativeList<T>, IEnumerable<T> where T : unmanaged
+public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unmanaged
 {
     private T* _ptr;
 
@@ -264,15 +250,15 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T>, IEnumerable<T>
 
         if (newCapacity > 0)
         {
-            newPtr = (T*)Unsafe.AllocZeroed((uint)(newCapacity * size));
+            newPtr = (T*)Memory.MemoryUtility.AllocZeroed((uint)(newCapacity * size));
             if (_ptr != null && _capacity > 0)
             {
                 var sizeToCopy = Math.Min(_capacity, newCapacity) * size;
-                Unsafe.Copy(_ptr, newPtr, (uint)sizeToCopy);
+                Memory.MemoryUtility.Copy(_ptr, newPtr, (uint)sizeToCopy);
             }
         }
 
-        Unsafe.Free(_ptr);
+        Memory.MemoryUtility.Free(_ptr);
 
         _ptr = newPtr;
         _capacity = newCapacity;
@@ -352,7 +338,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T>, IEnumerable<T>
         var sizeOf = sizeof(T);
         void* dst = (byte*)_ptr + idx * sizeOf;
 
-        Unsafe.Copy(ptr, dst, (uint)(count + sizeOf));
+        Memory.MemoryUtility.Copy(ptr, dst, (uint)(count + sizeOf));
     }
 
     public void AddRange(UnsafeList<T> list)
@@ -369,7 +355,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T>, IEnumerable<T>
         var src = dst + 1;
         _length--;
 
-        Unsafe.Copy(src, dst, (uint)(_length - index));
+        Memory.MemoryUtility.Copy(src, dst, (uint)(_length - index));
     }
 
     public readonly bool IsEmpty => !IsCreated || _length == 0;
@@ -380,7 +366,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T>, IEnumerable<T>
     {
         if (!IsCreated) return;
 
-        Unsafe.Free(_ptr);
+        Memory.MemoryUtility.Free(_ptr);
         _ptr = default;
         _length = default;
         _capacity = default;
@@ -396,18 +382,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T>, IEnumerable<T>
         return new Enumerator { m_Ptr = _ptr, m_Length = Length, m_Index = -1 };
     }
 
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
-
-    IEnumerator<T> IEnumerable<T>.GetEnumerator()
-    {
-        throw new NotImplementedException();
-    }
-
-    public struct Enumerator : IEnumerator<T>
+    public struct Enumerator
     {
         internal T* m_Ptr;
         internal int m_Length;
@@ -427,9 +402,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T>, IEnumerable<T>
             m_Index = -1;
         }
 
-        public T Current => m_Ptr[m_Index];
-
-        object IEnumerator.Current => Current;
+        public T* Current => m_Ptr + m_Index;
     }
 }
 

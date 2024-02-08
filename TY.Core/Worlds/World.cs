@@ -1,5 +1,6 @@
 using NLog;
 using TY.Entities;
+using TY.Memory;
 using TY.Systems;
 using TY.Unmanaged;
 
@@ -20,11 +21,11 @@ public class World
         Init();
     }
 
-    private void Init()
+    private unsafe void Init()
     {
         var entityManager = new EntityManager()
         {
-            entityDataAccess = default,
+            entityDataAccess = (EntityDataAccess*)MemoryUtility.AllocZeroed((uint)sizeof(EntityDataAccess)),
         };
 
         _wordUnmanaged = new WordUnmanaged()

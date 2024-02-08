@@ -26,43 +26,6 @@ namespace TY.Entities;
         return builder.ToString();
     }
 #>
-<#
-    string Typeof(int count)
-    {
-        var builder = new StringBuilder();
-
-        for (var i = 1; i <= count; i++)
-        {
-            builder.Append($"typeof({genericName}{i})");
-            if (i < count)
-            {
-                builder.Append(", ");
-            }
-        }
-
-        return builder.ToString();
-    }
-
-    string Select(int count)
-    {
-        if (count == 1)
-        {
-            return "v => (T1) v";
-        }
-        var builder = new StringBuilder();
-        builder.Append("v => (");
-        for (var i = 1; i <= count; i++)
-        {
-            builder.Append($"(T{i}) v[{i - 1}]");
-            if (i < count)
-            {
-                builder.Append(", ");
-            }
-        }
-        builder.Append(")");
-        return builder.ToString();
-    }
-#>
 public partial struct EntityManager
 {
 <#
@@ -71,7 +34,7 @@ public partial struct EntityManager
         var sb = new StringBuilder();
         for (int i = 1; i <= count; i++)
         {
-            sb.Append("        ").Append($"where T{i} : IQueryTypeParameter");
+            sb.Append("        ").Append($"where T{i} : unmanaged, IQueryTypeParameter");
 
             if (i != count)
             {

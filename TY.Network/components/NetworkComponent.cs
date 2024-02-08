@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.InteropServices;
+using System.Text.Json;
 using TY.Components;
 using TY.Network.kcp2k.highLevel2;
 
@@ -9,17 +10,18 @@ namespace TY.Network.components;
 /// </summary>
 public struct NetworkComponent : IComponentData
 {
-    public KcpConnection? KcpConnection;
+    private GCHandle _kcpConnection;
 
-    private JsonSerializerOptions _options = new() { IncludeFields = true };
-
-    public NetworkComponent()
+    public KcpConnection KcpConnection
     {
-        KcpConnection = null;
+        get => (_kcpConnection.Target as KcpConnection)!;
+        set => _kcpConnection = GCHandle.Alloc(value);
     }
+
+    private static JsonSerializerOptions _options = new() { IncludeFields = true };
 
     public void SendData(object data)
     {
-        KcpConnection!.SendData(JsonSerializer.SerializeToUtf8Bytes(data, _options));
+        KcpConnection.SendData(JsonSerializer.SerializeToUtf8Bytes(data, _options));
     }
 }

@@ -6,24 +6,30 @@
         <Nullable>enable</Nullable>
         <RootNamespace>TY</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        
+        <T4Execution>D:\下载\TextTransformCore\TextTransformCore.exe</T4Execution>
     </PropertyGroup>
 
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="$(T4Execution) $(ProjectDir)Entities\EntityManager.Query.tt"/>
+    </Target>
+
     <ItemGroup>
-        <PackageReference Include="NLog" Version="5.2.5" />
+        <PackageReference Include="NLog" Version="5.2.5"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Entities\EntityManager.Query.tt">
-        <Generator>TextTemplatingFileGenerator</Generator>
-        <LastGenOutput>EntityManager.Query.cs</LastGenOutput>
-      </None>
+        <None Update="Entities\EntityManager.Query.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>EntityManager.Query.cs</LastGenOutput>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Entities\EntityManager.Query.cs">
-        <AutoGen>True</AutoGen>
-        <DesignTime>True</DesignTime>
-        <DependentUpon>EntityManager.Query.tt</DependentUpon>
-      </Compile>
+        <Compile Update="Entities\EntityManager.Query.cs">
+            <AutoGen>True</AutoGen>
+            <DesignTime>True</DesignTime>
+            <DependentUpon>EntityManager.Query.tt</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>
