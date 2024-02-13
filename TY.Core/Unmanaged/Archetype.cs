@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using TY.Collections;
+using TY.Components;
 
 namespace TY.Unmanaged;
 
@@ -26,16 +27,64 @@ public unsafe struct Archetype
     /// </summary>
     public UnsafePtrList<Chunk> chunkData;
 
+    public int EntityCount
+    {
+        get
+        {
+            int count = 0;
+
+            foreach (var chunk in chunkData)
+            {
+                count += chunk->Size;
+            }
+
+            return count;
+        }
+    }
+
+
+    public Ref<T> ResolvComponent<T>(int index) where T : unmanaged, IComponentData
+    {
+        if (index >= EntityCount)
+        {
+            //throw;
+        }
+
+        int chunckIndex = 0;
+
+        while (index >= capacityInChunk)
+        {
+            chunckIndex++;
+            index -= capacityInChunk;
+        }
+
+        int indexInTypesArray = TypeIndexInTypeArray<T>();
+
+        T* components = (T*)chunkData[chunckIndex]->ResolvComponentOfOffset(typesOffsets[indexInTypesArray]);
+
+        return new Ref<T>() { data = (components + index) };
+    }
+
+    public int TypeIndexInTypeArray<T>()
+    {
+        var typeIndex = SharedInstance<TypeManager>.Instance.TypeIndex<T>();
+
+        for (int i = 0; i < typesCount; i++)
+        {
+            if (types[i].TypeIndex == typeIndex)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
     /**
      * 判断此原型是否包含所有类型
      */
     public bool IsContainAllTypes(ComponentType* componentTypes, int count)
     {
-        if (count > typesCount)
-        {
-            return false;
-        }
-        
         for (int i = 0; i < count; i++)
         {
             bool c = false;

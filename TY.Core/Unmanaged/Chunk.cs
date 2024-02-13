@@ -103,6 +103,12 @@ public unsafe struct Chunk
         Size++;
     }
 
+    public void* ResolvComponentOfOffset(int offset)
+    {
+        fixed (byte* buffer = Buffer)
+            return buffer + offset;
+    }
+
     public static int CalculateChunkCapacity(int* sizeOfs, int count)
     {
         var size = 0;

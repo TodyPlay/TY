@@ -17,7 +17,7 @@ public sealed class TimeUpdateSystem : SystemBase
 
     public override void Update()
     {
-        foreach (var timeData in EntityManager.Query<Ref<TimeData>>())
+        foreach ((var timeData, var _) in EntityManager.Query<TimeData,TimeData>())
         {
             timeData.Value.DeltaTime =
                 (DateTime.Now - _startTime - TimeSpan.FromMilliseconds(timeData.Value.Time)).TotalMilliseconds;

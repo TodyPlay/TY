@@ -30,8 +30,9 @@ public unsafe partial struct EntityManager
         throw new NotImplementedException();
     }
 
-    public void Query(ComponentType[] types)
+    public EntityQuery Query(ComponentType* types, int count)
     {
+        return entityDataAccess->Query(types, count);
     }
 }
 
@@ -40,7 +41,7 @@ public unsafe partial struct EntityManager
 /// </summary>
 public unsafe struct EntityDataAccess
 {
-    public UnsafeList<Archetype> archetypes;
+    public UnsafePtrList<Archetype> archetypes;
 
     Archetype* _emptyArchetype;
 
@@ -54,20 +55,18 @@ public unsafe struct EntityDataAccess
     /// </summary>
     public UnsafeList<EntityInChunk> chunkInfo;
 
-    public EntityQuery Query(ComponentType[] componentTypes)
+
+    public EntityQuery Query(ComponentType* types, int count)
     {
         //TODO 使用帧内存避免手动释放
         var matchingTypes = MemoryUtility.AllocZeroed<UnsafePtrList<Archetype>>();
 
-        fixed (ComponentType* types = componentTypes)
+        foreach (var archetype in archetypes)
         {
-            foreach (var archetype in archetypes)
             {
+                if (archetype->IsContainAllTypes(types, count))
                 {
-                    if (archetype->IsContainAllTypes(types, componentTypes.Length))
-                    {
-                        matchingTypes->Add(archetype);
-                    }
+                    matchingTypes->Add(archetype);
                 }
             }
         }
@@ -124,7 +123,7 @@ public unsafe struct EntityDataAccess
     private Archetype* CreateArchetype(ComponentTypeInArchetype* sortedComponents, int count)
     {
         var byteSize = sizeof(ComponentTypeInArchetype) * count;
-        var allocSortedComponents = (ComponentTypeInArchetype*)Memory.MemoryUtility.AllocZeroed((uint)byteSize);
+        var allocSortedComponents = (ComponentTypeInArchetype*)MemoryUtility.AllocZeroed((uint)byteSize);
 
         MemoryUtility.Copy(sortedComponents, allocSortedComponents, (uint)byteSize);
 
@@ -157,6 +156,7 @@ public unsafe struct EntityDataAccess
             usedBytes += archetype->typesSizes[c] * archetype->capacityInChunk;
         }
 
+        archetypes.Add(archetype);
         return archetype;
     }
 
@@ -168,6 +168,6 @@ public unsafe struct EntityDataAccess
 
         new Span<ComponentType>(types, count).Sort();
 
-        Memory.MemoryUtility.Copy(types, sorted + 1, sizeof(ComponentType) * count);
+        MemoryUtility.Copy(types, sorted + 1, sizeof(ComponentType) * count);
     }
 }

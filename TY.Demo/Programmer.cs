@@ -1,16 +1,19 @@
 using System;
-using TY.Memory;
+using TY.App;
+using TY.Demo.Systems;
+
 
 unsafe
 {
-    var ptr = MemoryUtility.AllocZeroed<int>(64);
+    int* p = default;
 
-    for (int i = 0; i < 64; i++)
-    {
-        ptr[i] = i;
-    }
-
-    MemoryUtility.Free(ptr);
-
-    Console.WriteLine((int)ptr);
+    Console.WriteLine(*p);
 }
+//
+// var application = new Application();
+//
+// var world = application.CreateWorld("Timing");
+//
+// world.CreateAndGetSystem<ShowTimeSystem>();
+//
+// application.Run();

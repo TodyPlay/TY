@@ -24,12 +24,13 @@ public class PlayerSystem : SystemBase
 
     public override void Update()
     {
-        foreach (var player in EntityManager.Query<Ref<PlayerInfo>>())
+        foreach (var player in EntityManager.Query<PlayerInfo>())
         {
             player.Value.Position += Vector3.One;
         }
 
-        foreach (var (player, networkComponent) in EntityManager.Query<PlayerInfo, NetworkComponent>())
+        foreach ((PlayerInfo player, NetworkComponent networkComponent) in EntityManager
+                     .Query<PlayerInfo, NetworkComponent>())
         {
             if (player.Position.X % 10 == 0)
             {

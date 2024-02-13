@@ -16,7 +16,22 @@ namespace TY.Entities;
         var builder = new StringBuilder();
         for (var i = 1; i <= count; i++)
         {
-            builder.Append(genericName).Append(i);
+            builder.Append($"{genericName}{i}");
+            if (i < count)
+            {
+                builder.Append(", ");
+            }
+        }
+
+        return builder.ToString();
+    }
+    
+    string RefGenerics(int count)
+    {
+        var builder = new StringBuilder();
+        for (var i = 1; i <= count; i++)
+        {
+            builder.Append($"Ref<{genericName}{i}>");
             if (i < count)
             {
                 builder.Append(", ");
@@ -34,7 +49,7 @@ public partial struct EntityManager
         var sb = new StringBuilder();
         for (int i = 1; i <= count; i++)
         {
-            sb.Append("        ").Append($"where T{i} : unmanaged, IQueryTypeParameter");
+            sb.Append("        ").Append($"where T{i} : unmanaged, IComponentData");
 
             if (i != count)
             {
@@ -48,10 +63,10 @@ public partial struct EntityManager
     for (var i = start; i < end; i++)
     {
         Write(i == 1
-            ? $@"    public IEnumerable<{Generics(i)}> Query<{Generics(i)}>()
+            ? $@"    public IEnumerable<{RefGenerics(i)}> Query<{Generics(i)}>()
 {Wheres(i)}
 "
-            : $@"    public IEnumerable<({Generics(i)})> Query<{Generics(i)}>()
+            : $@"    public IEnumerable<({RefGenerics(i)})> Query<{Generics(i)}>()
 {Wheres(i)}
 ");
         WriteLine(@$"    {{

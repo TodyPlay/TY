@@ -32,6 +32,11 @@ public class Application : WorldManager
 
     public void Run()
     {
+        if (Size == 0)
+        {
+            CreateWorld();
+        }
+
         Start();
         while (Enable)
         {

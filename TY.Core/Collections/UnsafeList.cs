@@ -254,11 +254,11 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
             if (_ptr != null && _capacity > 0)
             {
                 var sizeToCopy = Math.Min(_capacity, newCapacity) * size;
-                Memory.MemoryUtility.Copy(_ptr, newPtr, (uint)sizeToCopy);
+                MemoryUtility.Copy(_ptr, newPtr, (uint)sizeToCopy);
             }
         }
 
-        Memory.MemoryUtility.Free(_ptr);
+        MemoryUtility.Free(_ptr);
 
         _ptr = newPtr;
         _capacity = newCapacity;
@@ -338,7 +338,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
         var sizeOf = sizeof(T);
         void* dst = (byte*)_ptr + idx * sizeOf;
 
-        Memory.MemoryUtility.Copy(ptr, dst, (uint)(count + sizeOf));
+        MemoryUtility.Copy(ptr, dst, (uint)(count + sizeOf));
     }
 
     public void AddRange(UnsafeList<T> list)
@@ -355,7 +355,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
         var src = dst + 1;
         _length--;
 
-        Memory.MemoryUtility.Copy(src, dst, (uint)(_length - index));
+        MemoryUtility.Copy(src, dst, (uint)(_length - index));
     }
 
     public readonly bool IsEmpty => !IsCreated || _length == 0;
@@ -366,7 +366,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
     {
         if (!IsCreated) return;
 
-        Memory.MemoryUtility.Free(_ptr);
+        MemoryUtility.Free(_ptr);
         _ptr = default;
         _length = default;
         _capacity = default;
@@ -402,7 +402,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
             m_Index = -1;
         }
 
-        public T* Current => m_Ptr + m_Index;
+        public T Current => m_Ptr[m_Index];
     }
 }
 

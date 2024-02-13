@@ -12,6 +12,8 @@ public abstract class WorldManager
     /// </summary>
     private readonly Dictionary<string, World> _worlds = new();
 
+    public int Size => _worlds.Count;
+
     public World CreateWorld()
     {
         return CreateWorld(Guid.NewGuid().ToString());

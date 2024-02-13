@@ -1,9 +1,11 @@
-﻿namespace TY.Entities;
+﻿using TY.Components;
+
+namespace TY.Entities;
 
 /// <summary>
 ///     实体实例
 /// </summary>
-public struct Entity
+public struct Entity : IQueryTypeParameter
 {
     /// <summary>
     /// 实体索引
