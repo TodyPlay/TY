@@ -59,7 +59,7 @@ public unsafe struct EntityDataAccess
     public EntityQuery Query(ComponentType* types, int count)
     {
         //TODO 使用帧内存避免手动释放
-        var matchingTypes = MemoryUtility.AllocZeroed<UnsafePtrList<Archetype>>();
+        var matchingTypes = MemoryUtility.AllocZeroed<UnsafePtrList<Archetype>>(allocType: AllocType.FRAME);
 
         foreach (var archetype in archetypes)
         {

@@ -17,17 +17,17 @@ public enum AllocType
 
 public class MemoryUtility
 {
-    public static unsafe T* AllocZeroed<T>(int count = 1) where T : unmanaged
+    public static unsafe T* AllocZeroed<T>(int count = 1 , AllocType allocType = AllocType.GLOBAL) where T : unmanaged
     {
-        return (T*)AllocZeroed((uint)(sizeof(T) * count));
+        return (T*)AllocZeroed((uint)(sizeof(T) * count) , allocType);
     }
 
-    public static unsafe void* AllocZeroed(uint size)
+    public static unsafe void* AllocZeroed(uint size , AllocType allocType = AllocType.GLOBAL)
     {
         return NativeMemory.AllocZeroed(size);
     }
 
-    public static unsafe void* Alloc(uint size)
+    public static unsafe void* Alloc(uint size, AllocType allocType = AllocType.GLOBAL)
     {
         return NativeMemory.Alloc(size);
     }

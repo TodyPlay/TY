@@ -25,7 +25,7 @@ public class World
     {
         var entityManager = new EntityManager()
         {
-            entityDataAccess = (EntityDataAccess*)MemoryUtility.AllocZeroed((uint)sizeof(EntityDataAccess)),
+            entityDataAccess = MemoryUtility.AllocZeroed<EntityDataAccess>(),
         };
 
         _wordUnmanaged = new WordUnmanaged()

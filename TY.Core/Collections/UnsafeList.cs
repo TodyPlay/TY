@@ -135,7 +135,7 @@ public unsafe struct UnsafePtrList<T> : IDisposable where T : unmanaged
         var sizeOf = sizeof(T);
         void* dst = (byte*)_ptr + idx * sizeOf;
 
-        Memory.MemoryUtility.Copy(ptr, dst, (uint)(count + sizeOf));
+        MemoryUtility.Copy(ptr, dst, (uint)(count + sizeOf));
     }
 
     public void AddRange(UnsafePtrList<T> list)
@@ -250,7 +250,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
 
         if (newCapacity > 0)
         {
-            newPtr = (T*)Memory.MemoryUtility.AllocZeroed((uint)(newCapacity * size));
+            newPtr = (T*)MemoryUtility.AllocZeroed((uint)(newCapacity * size));
             if (_ptr != null && _capacity > 0)
             {
                 var sizeToCopy = Math.Min(_capacity, newCapacity) * size;

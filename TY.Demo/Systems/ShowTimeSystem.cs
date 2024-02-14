@@ -13,7 +13,7 @@ public class ShowTimeSystem : SystemBase
 
     public override void Update()
     {
-        (TimeData timeData, TimeData _) = EntityManager.Query<TimeData, TimeData>().First();
+        TimeData timeData = EntityManager.Query<TimeData>().First();
         if ((_counter += timeData.DeltaTime) >= 1000)
         {
             _counter -= 1000;

@@ -1,4 +1,3 @@
-using TY.Components;
 using TY.Systems;
 using TY.Unmanaged;
 
@@ -17,7 +16,7 @@ public sealed class TimeUpdateSystem : SystemBase
 
     public override void Update()
     {
-        foreach ((var timeData, var _) in EntityManager.Query<TimeData,TimeData>())
+        foreach (var timeData in EntityManager.Query<TimeData>())
         {
             timeData.Value.DeltaTime =
                 (DateTime.Now - _startTime - TimeSpan.FromMilliseconds(timeData.Value.Time)).TotalMilliseconds;

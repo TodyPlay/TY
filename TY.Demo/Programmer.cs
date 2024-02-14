@@ -1,19 +1,12 @@
-using System;
 using TY.App;
 using TY.Demo.Systems;
 
+var application = new Application();
 
-unsafe
-{
-    int* p = default;
+var world = application.CreateWorld("Timing");
 
-    Console.WriteLine(*p);
-}
-//
-// var application = new Application();
-//
-// var world = application.CreateWorld("Timing");
-//
-// world.CreateAndGetSystem<ShowTimeSystem>();
-//
-// application.Run();
+world.CreateAndGetSystem<ShowTimeSystem>();
+
+application.Run();
+
+

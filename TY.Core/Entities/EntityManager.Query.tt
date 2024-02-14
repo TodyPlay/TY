@@ -1,78 +1,52 @@
-<#@ template language="C#" #>
-<#@ import namespace="System.Text" #>
+<#@ template language="C#"#>
+<#@ import namespace="System.Linq" #>
+
 using TY.Components;
+using TY.Unmanaged;
 
 namespace TY.Entities;
 
 <#
-    const int start = 1;
-
-    const int end = 8;
-
-    const string genericName = "T";
-
-    string Generics(int count)
-    {
-        var builder = new StringBuilder();
-        for (var i = 1; i <= count; i++)
-        {
-            builder.Append($"{genericName}{i}");
-            if (i < count)
-            {
-                builder.Append(", ");
-            }
-        }
-
-        return builder.ToString();
-    }
-    
-    string RefGenerics(int count)
-    {
-        var builder = new StringBuilder();
-        for (var i = 1; i <= count; i++)
-        {
-            builder.Append($"Ref<{genericName}{i}>");
-            if (i < count)
-            {
-                builder.Append(", ");
-            }
-        }
-
-        return builder.ToString();
-    }
+    const int SIZE = 8;
 #>
+
 public partial struct EntityManager
 {
+
 <#
-    string Wheres(int count)
+    for (int i = 1; i <= SIZE; i++)
     {
-        var sb = new StringBuilder();
-        for (int i = 1; i <= count; i++)
+        var generic = string.Join(", ", (new int[i].Select(((_, index) => $"T{index + 1}"))).ToArray());
+#>
+
+    public Enumerable<<#= generic #>> Query<<#= generic #>>()
+<#
+        for (int j = 1; j <= i; j++)
         {
-            sb.Append("        ").Append($"where T{i} : unmanaged, IComponentData");
-
-            if (i != count)
-            {
-                sb.AppendLine();
-            }
+#>
+        where <#= "T" + j #> : unmanaged, IComponentData
+<#
         }
-
-        return sb.ToString();
-    }
-
-    for (var i = start; i < end; i++)
+#>
     {
-        Write(i == 1
-            ? $@"    public IEnumerable<{RefGenerics(i)}> Query<{Generics(i)}>()
-{Wheres(i)}
-"
-            : $@"    public IEnumerable<({RefGenerics(i)})> Query<{Generics(i)}>()
-{Wheres(i)}
-");
-        WriteLine(@$"    {{
-        throw new NotImplementedException();
-    }}
-");
+        unsafe
+        {
+            ComponentType* types = stackalloc ComponentType[<#= i #>];
+<#
+        for (int j = 1; j <= i; j++)
+        {
+#>
+            types[<#= j - 1 #>] = ComponentType.ReadWrite<<#= "T" + j #>>();
+<#
+        }
+#>
+            var entityQuery = Query(types, <#= i #>);
+            return new Enumerable<<#= generic #>>() { matchingTypes = entityQuery.matchingTypes };
+        }
+    }
+<#
     }
 #>
+    
+
 }
