@@ -1,5 +1,6 @@
 ﻿namespace TY.Collections;
 
+//TODO 完善
 public unsafe struct FixedString64
 {
     public fixed byte data[64];
