@@ -40,6 +40,8 @@ public unsafe struct UnsafePtrList<T> : IDisposable where T : unmanaged
 
     private void ResizeExact(int newCapacity)
     {
+        var memory = SharedInstance<MemoryManager>.Instance;
+
         if (newCapacity < 0) newCapacity = 0;
 
         T** newPtr = default;
@@ -47,15 +49,15 @@ public unsafe struct UnsafePtrList<T> : IDisposable where T : unmanaged
 
         if (newCapacity > 0)
         {
-            newPtr = (T**)MemoryUtility.AllocZeroed((uint)(newCapacity * size));
+            newPtr = (T**)memory.AllocZeroed((uint)(newCapacity * size));
             if (_ptr != null && _capacity > 0)
             {
                 var sizeToCopy = Math.Min(_capacity, newCapacity) * size;
-                MemoryUtility.Copy(_ptr, newPtr, (uint)sizeToCopy);
+                memory.Copy(_ptr, newPtr, (uint)sizeToCopy);
             }
         }
 
-        MemoryUtility.Free(_ptr);
+        memory.Free(_ptr);
 
         _ptr = newPtr;
         _capacity = newCapacity;
@@ -135,7 +137,7 @@ public unsafe struct UnsafePtrList<T> : IDisposable where T : unmanaged
         var sizeOf = sizeof(T);
         void* dst = (byte*)_ptr + idx * sizeOf;
 
-        MemoryUtility.Copy(ptr, dst, (uint)(count + sizeOf));
+        SharedInstance<MemoryManager>.Instance.Copy(ptr, dst, (uint)(count + sizeOf));
     }
 
     public void AddRange(UnsafePtrList<T> list)
@@ -152,7 +154,7 @@ public unsafe struct UnsafePtrList<T> : IDisposable where T : unmanaged
         var src = dst + 1;
         _length--;
 
-        Memory.MemoryUtility.Copy(src, dst, (uint)(_length - index));
+        SharedInstance<MemoryManager>.Instance.Copy(src, dst, (uint)(_length - index));
     }
 
     public readonly bool IsEmpty => !IsCreated || _length == 0;
@@ -163,7 +165,7 @@ public unsafe struct UnsafePtrList<T> : IDisposable where T : unmanaged
     {
         if (!IsCreated) return;
 
-        MemoryUtility.Free(_ptr);
+        SharedInstance<MemoryManager>.Instance.Free(_ptr);
         _ptr = default;
         _length = default;
         _capacity = default;
@@ -250,15 +252,15 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
 
         if (newCapacity > 0)
         {
-            newPtr = (T*)MemoryUtility.AllocZeroed((uint)(newCapacity * size));
+            newPtr = (T*)SharedInstance<MemoryManager>.Instance.AllocZeroed((uint)(newCapacity * size));
             if (_ptr != null && _capacity > 0)
             {
                 var sizeToCopy = Math.Min(_capacity, newCapacity) * size;
-                MemoryUtility.Copy(_ptr, newPtr, (uint)sizeToCopy);
+                SharedInstance<MemoryManager>.Instance.Copy(_ptr, newPtr, (uint)sizeToCopy);
             }
         }
 
-        MemoryUtility.Free(_ptr);
+        SharedInstance<MemoryManager>.Instance.Free(_ptr);
 
         _ptr = newPtr;
         _capacity = newCapacity;
@@ -338,7 +340,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
         var sizeOf = sizeof(T);
         void* dst = (byte*)_ptr + idx * sizeOf;
 
-        MemoryUtility.Copy(ptr, dst, (uint)(count + sizeOf));
+        SharedInstance<MemoryManager>.Instance.Copy(ptr, dst, (uint)(count + sizeOf));
     }
 
     public void AddRange(UnsafeList<T> list)
@@ -355,7 +357,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
         var src = dst + 1;
         _length--;
 
-        MemoryUtility.Copy(src, dst, (uint)(_length - index));
+        SharedInstance<MemoryManager>.Instance.Copy(src, dst, (uint)(_length - index));
     }
 
     public readonly bool IsEmpty => !IsCreated || _length == 0;
@@ -366,7 +368,7 @@ public unsafe struct UnsafeList<T> : IDisposable, INativeList<T> where T : unman
     {
         if (!IsCreated) return;
 
-        MemoryUtility.Free(_ptr);
+        SharedInstance<MemoryManager>.Instance.Free(_ptr);
         _ptr = default;
         _length = default;
         _capacity = default;

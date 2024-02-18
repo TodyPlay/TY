@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using TY.Collections;
 using TY.Entities;
 using TY.Memory;
 
@@ -22,13 +23,13 @@ public class ChunkPool
 
     public unsafe void BackChunk(Chunk* chunk)
     {
-        Memory.MemoryUtility.CleanMemory(chunk, SIZE);
+        SharedInstance<MemoryManager>.Instance.CleanMemory(chunk, SIZE);
         _chunks.Enqueue((IntPtr)chunk);
     }
 
     private unsafe Chunk* NewChunk()
     {
-        return (Chunk*)Memory.MemoryUtility.AllocZeroed(SIZE);
+        return (Chunk*)SharedInstance<MemoryManager>.Instance.AllocZeroed(SIZE);
     }
 }
 

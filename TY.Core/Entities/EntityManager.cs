@@ -10,6 +10,7 @@ public unsafe partial struct EntityManager
 {
     public EntityDataAccess* entityDataAccess;
 
+
     public Entity CreateEntity()
     {
         return entityDataAccess->CreateEntity();
@@ -58,8 +59,8 @@ public unsafe struct EntityDataAccess
 
     public EntityQuery Query(ComponentType* types, int count)
     {
-        //TODO 使用帧内存避免手动释放
-        var matchingTypes = MemoryUtility.AllocZeroed<UnsafePtrList<Archetype>>(allocType: AllocType.FRAME);
+        var matchingTypes =
+            SharedInstance<MemoryManager>.Instance.AllocZeroed<UnsafePtrList<Archetype>>(allocType: AllocType.FRAME);
 
         foreach (var archetype in archetypes)
         {
@@ -82,7 +83,8 @@ public unsafe struct EntityDataAccess
 
         foreach (var archetype in archetypes)
         {
-            if (archetype->typesCount == count && MemoryUtility.MemoryCompare(archetype->types, types, count) == 0)
+            if (archetype->typesCount == count &&
+                SharedInstance<MemoryManager>.Instance.MemoryCompare(archetype->types, types, count) == 0)
             {
                 return archetype;
             }
@@ -122,15 +124,17 @@ public unsafe struct EntityDataAccess
 
     private Archetype* CreateArchetype(ComponentTypeInArchetype* sortedComponents, int count)
     {
+        var memory = SharedInstance<MemoryManager>.Instance;
+
         var byteSize = sizeof(ComponentTypeInArchetype) * count;
-        var allocSortedComponents = (ComponentTypeInArchetype*)MemoryUtility.AllocZeroed((uint)byteSize);
+        var allocSortedComponents = (ComponentTypeInArchetype*)memory.AllocZeroed((uint)byteSize);
 
-        MemoryUtility.Copy(sortedComponents, allocSortedComponents, (uint)byteSize);
+        memory.Copy(sortedComponents, allocSortedComponents, (uint)byteSize);
 
-        var archetype = (Archetype*)MemoryUtility.AllocZeroed((uint)sizeof(Archetype));
+        var archetype = (Archetype*)memory.AllocZeroed((uint)sizeof(Archetype));
 
-        var typesSizes = (int*)MemoryUtility.AllocZeroed(sizeof(int));
-        var typesOffsets = (int*)MemoryUtility.AllocZeroed(sizeof(int));
+        var typesSizes = (int*)memory.AllocZeroed(sizeof(int));
+        var typesOffsets = (int*)memory.AllocZeroed(sizeof(int));
 
         archetype->types = allocSortedComponents;
         archetype->typesCount = count;
@@ -167,7 +171,6 @@ public unsafe struct EntityDataAccess
             { TypeIndex = SharedInstance<TypeManager>.Instance.TypeIndex(typeof(Entity)) };
 
         new Span<ComponentType>(types, count).Sort();
-
-        MemoryUtility.Copy(types, sorted + 1, sizeof(ComponentType) * count);
+        SharedInstance<MemoryManager>.Instance.Copy(types, sorted + 1, sizeof(ComponentType) * count);
     }
 }
