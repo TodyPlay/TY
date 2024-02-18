@@ -1,79 +1,49 @@
-<#@ template language="C#" #>
-<#@ import namespace="System.Text" #>
+<#@ template language="C#"#>
+<#@ import namespace="System.Linq" #>
+using TY.Components;
+using TY.Unmanaged;
+
 namespace TY.Entities;
-
 <#
-    const int start = 1;
-
-    const int end = 8;
-
-    const string genericName = "T";
-
-    string Generics(int count)
-    {
-        var builder = new StringBuilder();
-        for (var i = 1; i <= count; i++)
-        {
-            builder.Append(genericName).Append(i);
-            if (i < count)
-            {
-                builder.Append(", ");
-            }
-        }
-
-        return builder.ToString();
-    }
+    const int SIZE = 8;
 #>
-<#
-    string Typeof(int count)
-    {
-        var builder = new StringBuilder();
 
-        for (var i = 1; i <= count; i++)
-        {
-            builder.Append($"typeof({genericName}{i})");
-            if (i < count)
-            {
-                builder.Append(", ");
-            }
-        }
-
-        return builder.ToString();
-    }
-
-    string Select(int count)
-    {
-        if (count == 1)
-        {
-            return "v => (T1) v";
-        }
-        var builder = new StringBuilder();
-        builder.Append("v => (");
-        for (var i = 1; i <= count; i++)
-        {
-            builder.Append($"(T{i}) v[{i - 1}]");
-            if (i < count)
-            {
-                builder.Append(", ");
-            }
-        }
-        builder.Append(")");
-        return builder.ToString();
-    }
-#>
-public partial class EntityManager
+public partial struct EntityManager
 {
 <#
-    for (var i = start; i < end; i++)
+    for (int i = 1; i <= SIZE; i++)
     {
-        WriteLine(i == 1
-            ? $@"    public IEnumerable<{Generics(i)}> Query<{Generics(i)}>()"
-            : $@"    public IEnumerable<({Generics(i)})> Query<{Generics(i)}>()");
+        var generic = string.Join(", ", (new int[i].Select(((_, index) => $"T{index + 1}"))).ToArray());
+#>
 
-        WriteLine(@$"    {{
-        return FindComponents({Typeof(i)}).Select({Select(i)});
-    }}
-");
+    public Enumerable<<#= generic #>> Query<<#= generic #>>()
+<#
+        for (int j = 1; j <= i; j++)
+        {
+#>
+        where <#= "T" + j #> : unmanaged, IComponentData
+<#
+        }
+#>
+    {
+        unsafe
+        {
+            ComponentType* types = stackalloc ComponentType[<#= i #>];
+<#
+        for (int j = 1; j <= i; j++)
+        {
+#>
+            types[<#= j - 1 #>] = ComponentType.ReadWrite<<#= "T" + j #>>();
+<#
+        }
+#>
+            var entityQuery = Query(types, <#= i #>);
+            return new Enumerable<<#= generic #>>() { matchingTypes = entityQuery.matchingTypes };
+        }
+    }
+<#
     }
 #>
+    
+
 }

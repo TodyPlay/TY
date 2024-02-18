@@ -12,6 +12,10 @@ public abstract class WorldManager
     /// </summary>
     private readonly Dictionary<string, World> _worlds = new();
 
+    public static Action? OnFrameEnd;
+
+    public int Size => _worlds.Count;
+
     public World CreateWorld()
     {
         return CreateWorld(Guid.NewGuid().ToString());
@@ -43,6 +47,11 @@ public abstract class WorldManager
 
     protected void Update()
     {
-        foreach (var world in _worlds.Values) world.Update();
+        foreach (var world in _worlds.Values)
+        {
+            world.Update();
+        }
+
+        OnFrameEnd?.Invoke();
     }
 }

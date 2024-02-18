@@ -1,4 +1,5 @@
 using TY.Systems;
+using TY.Unmanaged;
 
 namespace TY.Time;
 
@@ -10,16 +11,16 @@ public sealed class TimeUpdateSystem : SystemBase
 
     public override void Awake()
     {
-        EntityManager.AddComponent<TimeData>(EntityManager.CreateEntity());
+        EntityManager.CreateEntity(ComponentType.ReadWrite<TimeData>());
     }
 
     public override void Update()
     {
         foreach (var timeData in EntityManager.Query<TimeData>())
         {
-            timeData.DeltaTime =
-                (DateTime.Now - _startTime - TimeSpan.FromMilliseconds(timeData.Time)).TotalMilliseconds;
-            timeData.Time = (DateTime.Now - _startTime).TotalMilliseconds;
+            timeData.Value.DeltaTime =
+                (DateTime.Now - _startTime - TimeSpan.FromMilliseconds(timeData.Value.Time)).TotalMilliseconds;
+            timeData.Value.Time = (DateTime.Now - _startTime).TotalMilliseconds;
         }
     }
 }

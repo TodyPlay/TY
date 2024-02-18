@@ -1,18 +1,19 @@
-﻿namespace TY.Entities;
+﻿using TY.Components;
+
+namespace TY.Entities;
 
 /// <summary>
 ///     实体实例
 /// </summary>
-public class Entity
+public struct Entity : IQueryTypeParameter
 {
-    internal Entity()
-    {
-    }
+    /// <summary>
+    /// 实体索引
+    /// </summary>
+    public int Index;
 
-    public uint Index { get; init; }
-
-    public override string ToString()
-    {
-        return $"{nameof(Index)}: {Index}";
-    }
+    /// <summary>
+    /// 实体版本
+    /// </summary>
+    public int Version;
 }

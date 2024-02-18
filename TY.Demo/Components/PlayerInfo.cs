@@ -1,13 +1,14 @@
 ﻿using System.Numerics;
+using TY.Collections;
 using TY.Components;
 
 namespace TY.Demo.Components;
 
-public class PlayerInfo : IComponentData
+public struct PlayerInfo : IComponentData
 {
     public long Id;
 
-    public string? Name;
+    public FixedString64 Name;
 
     public float Hp;
 

@@ -6,24 +6,21 @@
         <Nullable>enable</Nullable>
         <RootNamespace>TY</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <T4Execution>D:\下载\TextTransformCore\TextTransformCore.exe</T4Execution>
     </PropertyGroup>
 
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="Exists($(T4Execution))">
+        <Exec Command="$(T4Execution) $(ProjectDir)Entities\EntityManager.Query.tt" />
+        <Exec Command="$(T4Execution) $(ProjectDir)Entities\EntityManager.Query.Enumator.tt" />
+    </Target>
+
     <ItemGroup>
-        <PackageReference Include="NLog" Version="5.2.5" />
+        <PackageReference Include="NLog" Version="5.2.8" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Entities\EntityManager.Query.tt">
-        <Generator>TextTemplatingFileGenerator</Generator>
-        <LastGenOutput>EntityManager.Query.cs</LastGenOutput>
-      </None>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="Entities\EntityManager.Query.cs">
-        <AutoGen>True</AutoGen>
-        <DesignTime>True</DesignTime>
-        <DependentUpon>EntityManager.Query.tt</DependentUpon>
-      </Compile>
+        <ProjectReference Include="..\TY.SourceGenerator\TY.SourceGenerator.csproj" OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false" />
     </ItemGroup>
 </Project>

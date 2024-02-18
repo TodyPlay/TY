@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using System.Text;
 using NLog;
+using TY.Components;
 using TY.Demo.Components;
 using TY.Network.components;
 using TY.Network.kcp2k.highLevel2;
@@ -25,10 +26,11 @@ public class PlayerSystem : SystemBase
     {
         foreach (var player in EntityManager.Query<PlayerInfo>())
         {
-            player.Position += Vector3.One;
+            player.Value.Position += Vector3.One;
         }
 
-        foreach (var (player, networkComponent) in EntityManager.Query<PlayerInfo, NetworkComponent>())
+        foreach ((PlayerInfo player, NetworkComponent networkComponent) in EntityManager
+                     .Query<PlayerInfo, NetworkComponent>())
         {
             if (player.Position.X % 10 == 0)
             {

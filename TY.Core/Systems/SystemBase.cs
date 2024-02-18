@@ -1,5 +1,5 @@
-using NLog;
 using TY.Entities;
+using TY.Unmanaged;
 using TY.Worlds;
 
 namespace TY.Systems;
@@ -8,27 +8,18 @@ public abstract class SystemBase
 {
     private bool _enable;
 
-    private EntityManager? _entityManager;
-    private Logger? _logger;
-    protected Logger Log => _logger ??= LogManager.GetLogger(GetType().FullName);
-
     public bool Enable
     {
         get => _enable;
-        set
-        {
-            _enable = value;
-            if (!value) Log.Warn($"System Disabled :{GetType()}");
-        }
+        set => _enable = value;
     }
 
-    public EntityManager EntityManager
-    {
-        get => _entityManager!;
-        set => _entityManager = value;
-    }
+    public WordUnmanaged WordUnmanaged;
 
-    protected World World => EntityManager.World;
+    public EntityManager EntityManager => WordUnmanaged.entityManager;
+
+    public World World => WordUnmanaged.World;
+
 
     public virtual int Order => int.MaxValue;
 
