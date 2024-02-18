@@ -1,18 +1,15 @@
 <#@ template language="C#"#>
 <#@ import namespace="System.Linq" #>
-
 using TY.Components;
 using TY.Unmanaged;
 
 namespace TY.Entities;
-
 <#
     const int SIZE = 8;
 #>
 
 public partial struct EntityManager
 {
-
 <#
     for (int i = 1; i <= SIZE; i++)
     {

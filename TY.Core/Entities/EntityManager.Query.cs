@@ -1,13 +1,10 @@
-
 using TY.Components;
 using TY.Unmanaged;
 
 namespace TY.Entities;
 
-
 public partial struct EntityManager
 {
-
 
     public Enumerable<T1> Query<T1>()
         where T1 : unmanaged, IComponentData

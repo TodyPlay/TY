@@ -5,8 +5,6 @@ using TY.Unmanaged;
 
 namespace TY.Entities;
 
-
-
 public struct Enumerable<T1> : IEnumerable<Ref<T1>>
     where T1 : unmanaged, IComponentData
 {
@@ -91,7 +89,6 @@ public struct Enumerator<T1> : IEnumerator<Ref<T1>>
     {
     }
 }
-
 
 public struct Enumerable<T1, T2> : IEnumerable<(Ref<T1>, Ref<T2>)>
     where T1 : unmanaged, IComponentData
@@ -180,7 +177,6 @@ public struct Enumerator<T1, T2> : IEnumerator<(Ref<T1>, Ref<T2>)>
     {
     }
 }
-
 
 public struct Enumerable<T1, T2, T3> : IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>)>
     where T1 : unmanaged, IComponentData
@@ -272,7 +268,6 @@ public struct Enumerator<T1, T2, T3> : IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>)>
     {
     }
 }
-
 
 public struct Enumerable<T1, T2, T3, T4> : IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>)>
     where T1 : unmanaged, IComponentData
@@ -368,7 +363,6 @@ public struct Enumerator<T1, T2, T3, T4> : IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3
     }
 }
 
-
 public struct Enumerable<T1, T2, T3, T4, T5> : IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>)>
     where T1 : unmanaged, IComponentData
     where T2 : unmanaged, IComponentData
@@ -387,7 +381,8 @@ public struct Enumerable<T1, T2, T3, T4, T5> : IEnumerable<(Ref<T1>, Ref<T2>, Re
         }
     }
 
-    IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>)> IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>)>.GetEnumerator()
+    IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>)>
+        IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>)>.GetEnumerator()
     {
         return GetEnumerator();
     }
@@ -466,7 +461,6 @@ public struct Enumerator<T1, T2, T3, T4, T5> : IEnumerator<(Ref<T1>, Ref<T2>, Re
     }
 }
 
-
 public struct Enumerable<T1, T2, T3, T4, T5, T6> : IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>)>
     where T1 : unmanaged, IComponentData
     where T2 : unmanaged, IComponentData
@@ -486,7 +480,8 @@ public struct Enumerable<T1, T2, T3, T4, T5, T6> : IEnumerable<(Ref<T1>, Ref<T2>
         }
     }
 
-    IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>)> IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>)>.GetEnumerator()
+    IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>)>
+        IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>)>.GetEnumerator()
     {
         return GetEnumerator();
     }
@@ -567,8 +562,9 @@ public struct Enumerator<T1, T2, T3, T4, T5, T6> : IEnumerator<(Ref<T1>, Ref<T2>
     }
 }
 
-
-public struct Enumerable<T1, T2, T3, T4, T5, T6, T7> : IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>)>
+public struct
+    Enumerable<T1, T2, T3, T4, T5, T6, T7> : IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>
+    )>
     where T1 : unmanaged, IComponentData
     where T2 : unmanaged, IComponentData
     where T3 : unmanaged, IComponentData
@@ -588,7 +584,8 @@ public struct Enumerable<T1, T2, T3, T4, T5, T6, T7> : IEnumerable<(Ref<T1>, Ref
         }
     }
 
-    IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>)> IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>)>.GetEnumerator()
+    IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>)>
+        IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>)>.GetEnumerator()
     {
         return GetEnumerator();
     }
@@ -599,7 +596,9 @@ public struct Enumerable<T1, T2, T3, T4, T5, T6, T7> : IEnumerable<(Ref<T1>, Ref
     }
 }
 
-public struct Enumerator<T1, T2, T3, T4, T5, T6, T7> : IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>)>
+public struct
+    Enumerator<T1, T2, T3, T4, T5, T6, T7> : IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>
+    )>
     where T1 : unmanaged, IComponentData
     where T2 : unmanaged, IComponentData
     where T3 : unmanaged, IComponentData
@@ -671,8 +670,9 @@ public struct Enumerator<T1, T2, T3, T4, T5, T6, T7> : IEnumerator<(Ref<T1>, Ref
     }
 }
 
-
-public struct Enumerable<T1, T2, T3, T4, T5, T6, T7, T8> : IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>, Ref<T8>)>
+public struct
+    Enumerable<T1, T2, T3, T4, T5, T6, T7, T8> : IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>,
+    Ref<T7>, Ref<T8>)>
     where T1 : unmanaged, IComponentData
     where T2 : unmanaged, IComponentData
     where T3 : unmanaged, IComponentData
@@ -693,7 +693,8 @@ public struct Enumerable<T1, T2, T3, T4, T5, T6, T7, T8> : IEnumerable<(Ref<T1>,
         }
     }
 
-    IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>, Ref<T8>)> IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>, Ref<T8>)>.GetEnumerator()
+    IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>, Ref<T8>)>
+        IEnumerable<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>, Ref<T8>)>.GetEnumerator()
     {
         return GetEnumerator();
     }
@@ -704,7 +705,9 @@ public struct Enumerable<T1, T2, T3, T4, T5, T6, T7, T8> : IEnumerable<(Ref<T1>,
     }
 }
 
-public struct Enumerator<T1, T2, T3, T4, T5, T6, T7, T8> : IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>, Ref<T7>, Ref<T8>)>
+public struct
+    Enumerator<T1, T2, T3, T4, T5, T6, T7, T8> : IEnumerator<(Ref<T1>, Ref<T2>, Ref<T3>, Ref<T4>, Ref<T5>, Ref<T6>,
+    Ref<T7>, Ref<T8>)>
     where T1 : unmanaged, IComponentData
     where T2 : unmanaged, IComponentData
     where T3 : unmanaged, IComponentData
@@ -777,4 +780,3 @@ public struct Enumerator<T1, T2, T3, T4, T5, T6, T7, T8> : IEnumerator<(Ref<T1>,
     {
     }
 }
-

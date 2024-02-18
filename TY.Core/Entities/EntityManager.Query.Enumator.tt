@@ -19,7 +19,6 @@ namespace TY.Entities;
             ? "Ref<T1>"
             : "(" + string.Join(", ", (new int[i].Select(((_, index) => $"Ref<T{index + 1}>"))).ToArray()) + ")";
 #>
-
 public struct Enumerable<<#= generic #>> : IEnumerable<<#= refGeneric #>>
 <#
         for (int j = 1; j <= i; j++)
@@ -125,7 +124,6 @@ public struct Enumerator<<#= generic #>> : IEnumerator<<#= refGeneric #>>
     {
     }
 }
-
 <#
     }
 #>

@@ -11,8 +11,8 @@
     </PropertyGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="Exists($(T4Execution))">
-        <Exec Command="$(T4Execution) $(ProjectDir)Entities\EntityManager.Query.tt"/>
-        <Exec Command="$(T4Execution) $(ProjectDir)Entities\EntityManager.Query.Enumator.tt"/>
+        <Exec Command="$(T4Execution) $(ProjectDir)Entities\EntityManager.Query.tt" />
+        <Exec Command="$(T4Execution) $(ProjectDir)Entities\EntityManager.Query.Enumator.tt" />
     </Target>
 
     <ItemGroup>
@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\TY.SourceGenerator\TY.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\TY.SourceGenerator\TY.SourceGenerator.csproj" OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false" />
     </ItemGroup>
-    
 </Project>
